@@ -13,9 +13,9 @@ const weatherGroups = {
   clear: new Set([0, 1]),
   cloudy: new Set([2, 3]),
   fog: new Set([45, 48]),
+  drizzle: new Set([51, 53, 55, 56, 57, 61]),
   rain: new Set([63, 65, 66, 67, 80, 81]),
   storm: new Set([82, 95, 96, 99]),
-  drizzle: new Set([51, 53, 55, 56, 57, 61]),
   snow: new Set([71, 73, 75, 77, 85, 86])
 };
 
@@ -168,27 +168,34 @@ function setCondition(current) {
   const isNight = current.is_day === 0;
   const isClear = weatherGroups.clear.has(code);
   const isCloudy = weatherGroups.cloudy.has(code);
+  const isDrizzle = weatherGroups.drizzle.has(code);
+  const isRain = weatherGroups.rain.has(code);
+  const isStorm = weatherGroups.storm.has(code);
+  const isHeavyPrecip = isRain || isStorm;
   const label = isNight && code === 0
     ? "Clear"
     : isNight && code === 1
       ? "Mostly clear"
-      : isMisty(current)
+    : isMisty(current)
     ? "Misty"
-    : windSpeed >= 38 && !weatherGroups.rain.has(code)
+    : windSpeed >= 38 && !isHeavyPrecip
       ? "Windy"
       : labels.get(code) || "Weather";
   const isHot = current.temperature_2m > 35;
-  const isRain = weatherGroups.rain.has(code) || code >= 95;
   const isNightCloudy = isNight && !isRain && isCloudy;
   const isFog = weatherGroups.fog.has(code) || isMisty(current) || isNightCloudy;
   const visualClass = isFog
     ? "weather-fog"
-    : isHot && !isRain
+    : isHot && !isHeavyPrecip
     ? "weather-hot"
-      : !isHot && !isRain && isClear
+      : !isHeavyPrecip && isClear
       ? getClearVisualClass(current)
-      : !isHot && !isRain && isCloudy
+      : !isHeavyPrecip && isCloudy
       ? "weather-cloudy"
+      : !isHeavyPrecip && isDrizzle
+      ? "weather-drizzle"
+      : isStorm || windSpeed >= 38
+      ? "weather-storm"
       : "weather-rain";
 
   conditionEl.textContent = label;
@@ -198,7 +205,9 @@ function setCondition(current) {
     "weather-clear-morning",
     "weather-clear-evening",
     "weather-cloudy",
+    "weather-drizzle",
     "weather-fog",
+    "weather-storm",
     "weather-rain"
   );
   document.body.classList.add(visualClass);

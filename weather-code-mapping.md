@@ -28,11 +28,10 @@ Reference for mapping Open-Meteo WMO weather codes to illustration states.
 | Clear | 0, 1 | Tiled rooftop with clay cockerel |
 | Cloudy | 2, 3 | Rooftop clothesline with gently flowing clothes |
 | Fog / Mist | 45, 48; or inferred mist from high humidity, high cloud cover, low wind | Two-wheeler / torch headlight silhouette |
-| Drizzle | 51, 53, 55 | Tea glass and fried pakode |
-| Rain | 61, 63, 65, 80, 81, 82 | Dirty muddy blue-and-white rubber chappals |
-| Windy | High wind when not raining | Umbrella |
+| Drizzle | 51, 53, 55, 56, 57, 61 | Tea glass |
+| Rain | 63, 65, 66, 67, 80, 81 | Rain |
+| Rain / Storm / Windy | 82, 95, 96, 99; or high wind when not raining | Heavy rain and wind |
 | Cold | Temperature < 18 C; freezing drizzle/rain; snow codes | Monkey cap |
-| Storm | 95, 96, 99 | Power-cut darkness / storm-specific art |
 
 ## Current App Mapping
 
@@ -42,7 +41,9 @@ Reference for mapping Open-Meteo WMO weather codes to illustration states.
 | Clear morning/day | `images/clear-sky-morning.png` |
 | Clear evening | `images/clear-sky-evening.png` |
 | Cloudy | `images/cloudy.png` |
+| Drizzle | `images/drizzle.png` |
 | Fog / Mist | `images/fog.png` |
-| Rain / Windy fallback | `images/heavy rain and wind.png` |
+| Rain | `images/rain.png` |
+| Rain / Storm / Windy | `images/heavy rain and wind.png` |
 
-Unimplemented states currently fall back to the rain/windy asset until their illustrations are added.
+Snow and icy-rain-style states are currently unimplemented and fall back to the rain/windy asset until their illustrations are added.

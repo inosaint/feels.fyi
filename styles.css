@@ -50,6 +50,12 @@ body.weather-cloudy {
   background-position: 52% 70%;
 }
 
+body.weather-drizzle {
+  background-color: #4d57e9;
+  background-image: url("images/drizzle.png");
+  background-position: 56% 72%;
+}
+
 body.weather-fog {
   background-color: #3a185c;
   background-image: url("images/fog.png");
@@ -57,6 +63,12 @@ body.weather-fog {
 }
 
 body.weather-rain {
+  background-color: #3515ef;
+  background-image: url("images/rain.png");
+  background-position: 69% 74%;
+}
+
+body.weather-storm {
   background-color: #3515ef;
   background-image: url("images/heavy rain and wind.png");
   background-position: 69% 74%;
@@ -289,6 +301,10 @@ input:focus {
     background-position: 71% 69%;
   }
 
+  body.weather-storm {
+    background-position: 71% 69%;
+  }
+
   body.weather-clear,
   body.weather-clear-morning,
   body.weather-clear-evening {
@@ -297,6 +313,10 @@ input:focus {
 
   body.weather-cloudy {
     background-position: 52% 68%;
+  }
+
+  body.weather-drizzle {
+    background-position: 56% 70%;
   }
 
   body.weather-fog {
@@ -321,6 +341,10 @@ input:focus {
     background-position: 61% 70%;
   }
 
+  body.weather-storm {
+    background-position: 61% 70%;
+  }
+
   body.weather-clear,
   body.weather-clear-morning,
   body.weather-clear-evening {
@@ -329,6 +353,10 @@ input:focus {
 
   body.weather-cloudy {
     background-position: 50% 68%;
+  }
+
+  body.weather-drizzle {
+    background-position: 52% 70%;
   }
 
   body.weather-fog {
