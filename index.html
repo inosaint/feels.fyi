@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weather</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="weather-clear-morning">
+    <script>
+      document.body.className = localStorage.getItem("weatherVisualClass") || "weather-clear-morning";
+    </script>
+    <main class="app-shell" aria-live="polite">
+      <section class="weather-readout" aria-label="Current weather">
+        <p class="temperature" id="temperature">--<span class="degree">&deg;</span></p>
+        <p class="condition" id="condition">Loading</p>
+      </section>
+
+      <button class="location-trigger" id="locationTrigger" type="button" aria-haspopup="dialog">
+        <svg class="location-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 21s7-6.2 7-12A7 7 0 0 0 5 9c0 5.8 7 12 7 12Z"></path>
+          <circle cx="12" cy="9" r="2.5"></circle>
+        </svg>
+        <span id="locationLabel">Bangalore, India</span>
+      </button>
+
+      <section class="search-overlay" id="searchOverlay" aria-label="Search location" aria-modal="true" role="dialog" hidden>
+        <div class="overlay-top">
+          <button class="overlay-close" id="overlayClose" type="button" aria-label="Close search">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12"></path>
+            </svg>
+          </button>
+          <form class="search-form" id="searchForm" autocomplete="off">
+            <label class="sr-only" for="locationInput">Search location</label>
+            <input
+              id="locationInput"
+              name="location"
+              type="search"
+            value="Bangalore"
+              placeholder="search location"
+            enterkeyhint="search"
+            >
+            <button class="search-submit" type="submit">Search</button>
+          </form>
+        </div>
+        <div class="results" id="results" role="listbox" aria-label="City results"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

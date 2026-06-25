@@ -1,0 +1,79 @@
+{
+  "" : {
+    "diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherIOS-primary.dia",
+    "emit-module-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherIOS-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherIOS-primary-emit-module.dia",
+    "pch" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherIOS-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherIOS-primary.swiftdeps"
+  },
+  "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  },
+  "/Users/trine/Documents/Codex/Weather/WeatherIOS/WeatherIOS/ContentView.swift" : {
+    "const-values" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/trine/Documents/Codex/Weather/WeatherIOS/WeatherIOS/LocationManager.swift" : {
+    "const-values" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/LocationManager.swiftconstvalues",
+    "dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/LocationManager.d",
+    "diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/LocationManager.dia",
+    "index-unit-output-path" : "/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/LocationManager.o",
+    "llvm-bc" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/LocationManager.bc",
+    "object" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/LocationManager.o",
+    "swift-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/LocationManager.swiftdeps",
+    "swiftmodule" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/LocationManager~partial.swiftmodule"
+  },
+  "/Users/trine/Documents/Codex/Weather/WeatherIOS/WeatherIOS/WeatherApp.swift" : {
+    "const-values" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherApp.swiftconstvalues",
+    "dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherApp.d",
+    "diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherApp.dia",
+    "index-unit-output-path" : "/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherApp.o",
+    "llvm-bc" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherApp.bc",
+    "object" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherApp.o",
+    "swift-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherApp.swiftdeps",
+    "swiftmodule" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherApp~partial.swiftmodule"
+  },
+  "/Users/trine/Documents/Codex/Weather/WeatherIOS/WeatherIOS/WeatherModels.swift" : {
+    "const-values" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherModels.swiftconstvalues",
+    "dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherModels.d",
+    "diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherModels.dia",
+    "index-unit-output-path" : "/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherModels.o",
+    "llvm-bc" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherModels.bc",
+    "object" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherModels.o",
+    "swift-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherModels.swiftdeps",
+    "swiftmodule" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherModels~partial.swiftmodule"
+  },
+  "/Users/trine/Documents/Codex/Weather/WeatherIOS/WeatherIOS/WeatherService.swift" : {
+    "const-values" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherService.swiftconstvalues",
+    "dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherService.d",
+    "diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherService.dia",
+    "index-unit-output-path" : "/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherService.o",
+    "llvm-bc" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherService.bc",
+    "object" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherService.o",
+    "swift-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherService.swiftdeps",
+    "swiftmodule" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherService~partial.swiftmodule"
+  },
+  "/Users/trine/Documents/Codex/Weather/WeatherIOS/WeatherIOS/WeatherViewModel.swift" : {
+    "const-values" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherViewModel.swiftconstvalues",
+    "dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherViewModel.d",
+    "diagnostics" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherViewModel.dia",
+    "index-unit-output-path" : "/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherViewModel.o",
+    "llvm-bc" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherViewModel.bc",
+    "object" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherViewModel.o",
+    "swift-dependencies" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherViewModel.swiftdeps",
+    "swiftmodule" : "/Users/trine/Documents/Codex/Weather/WeatherIOS/DerivedData/Build/Intermediates.noindex/WeatherIOS.build/Debug-iphonesimulator/WeatherIOS.build/Objects-normal/arm64/WeatherViewModel~partial.swiftmodule"
+  }
+}

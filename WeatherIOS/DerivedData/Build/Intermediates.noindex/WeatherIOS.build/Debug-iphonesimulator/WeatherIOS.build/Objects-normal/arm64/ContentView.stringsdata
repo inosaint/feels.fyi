@@ -1,0 +1,104 @@
+{
+  "source": "/Users/trine/Documents/Codex/Weather/WeatherIOS/WeatherIOS/ContentView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Opens location search",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "feels.fyi",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 129
+        }
+      },
+      {
+        "comment": "",
+        "key": "feels.fyi",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 122
+        }
+      },
+      {
+        "comment": "",
+        "key": "°",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 193
+        }
+      },
+      {
+        "comment": "",
+        "key": "Location",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "Search location",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 302
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start typing a city or region.",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 272
+        }
+      },
+      {
+        "comment": "",
+        "key": "Search for a place",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 270
+        }
+      },
+      {
+        "comment": "",
+        "key": "Searching",
+        "location": {
+          "startingColumn": 66,
+          "startingLine": 277
+        }
+      },
+      {
+        "comment": "",
+        "key": "No cities found",
+        "location": {
+          "startingColumn": 80,
+          "startingLine": 277
+        }
+      },
+      {
+        "comment": "",
+        "key": "Looking up matching places.",
+        "location": {
+          "startingColumn": 84,
+          "startingLine": 279
+        }
+      },
+      {
+        "comment": "",
+        "key": "Try a different spelling or nearby city.",
+        "location": {
+          "startingColumn": 116,
+          "startingLine": 279
+        }
+      }
+    ]
+  },
+  "version": 1
+}

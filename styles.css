@@ -1,0 +1,337 @@
+:root {
+  --ink: #210612;
+  --panel: rgba(255, 255, 255, 0.76);
+  --panel-strong: rgba(255, 255, 255, 0.9);
+  --shadow: 0 18px 42px rgba(30, 8, 28, 0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100svh;
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 400;
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow: hidden;
+}
+
+body.weather-hot {
+  background-color: #f0f600;
+  background-image: url("images/hot35.png");
+  background-position: 63% 74%;
+}
+
+body.weather-clear,
+body.weather-clear-morning {
+  background-color: #84b5d0;
+  background-image: url("images/clear-sky-morning.png");
+  background-position: 52% 73%;
+}
+
+body.weather-clear-evening {
+  background-color: #0b8fd7;
+  background-image: url("images/clear-sky-evening.png");
+  background-position: 52% 73%;
+}
+
+body.weather-cloudy {
+  background-color: #095fe8;
+  background-image: url("images/cloudy.png");
+  background-position: 52% 70%;
+}
+
+body.weather-fog {
+  background-color: #3a185c;
+  background-image: url("images/fog.png");
+  background-position: 67% 76%;
+}
+
+body.weather-rain {
+  background-color: #3515ef;
+  background-image: url("images/heavy rain and wind.png");
+  background-position: 69% 74%;
+}
+
+.app-shell {
+  position: relative;
+  min-height: 100svh;
+  padding: max(24px, env(safe-area-inset-top)) 22px max(24px, env(safe-area-inset-bottom));
+}
+
+.weather-readout {
+  position: absolute;
+  top: max(24px, env(safe-area-inset-top));
+  left: 22px;
+  max-width: min(74vw, 330px);
+}
+
+.temperature {
+  margin: 0;
+  font-family: "Caveat Brush", cursive;
+  font-size: clamp(6.8rem, 35vw, 10.5rem);
+  font-weight: 400;
+  line-height: 0.75;
+  letter-spacing: 0;
+}
+
+.degree {
+  display: inline-block;
+  font-family: "Caveat Brush", cursive;
+  font-size: 32%;
+  font-weight: 400;
+  line-height: 1;
+  transform: translate(-0.08em, -1.18em);
+}
+
+.condition {
+  margin: 16px 0 0 6px;
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.1;
+  text-transform: capitalize;
+}
+
+.location-trigger {
+  position: fixed;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  left: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: calc(100vw - 36px);
+  min-height: 48px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow: 0 18px 46px rgba(30, 8, 28, 0.18);
+  font-size: 1rem;
+  font-weight: 400;
+  transform: translateX(-50%);
+  backdrop-filter: blur(24px) saturate(1.18);
+}
+
+.location-icon {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.25;
+}
+
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: max(20px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(24px) saturate(1.15);
+}
+
+.search-overlay::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.search-overlay[hidden] {
+  display: none;
+}
+
+.overlay-top {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.search-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid rgba(33, 6, 18, 0.12);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+
+input,
+button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 400;
+}
+
+input {
+  min-width: 0;
+  width: 100%;
+  padding: 0 12px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.68);
+  outline: none;
+}
+
+input:focus {
+  box-shadow: inset 0 0 0 2px rgba(33, 6, 18, 0.48);
+}
+
+.search-submit {
+  padding: 0 14px;
+  color: #fff;
+  background: var(--ink);
+  font-weight: 400;
+}
+
+.results {
+  display: none;
+  max-height: 176px;
+  overflow: auto;
+  border-radius: 8px;
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+}
+
+.results.is-open {
+  display: grid;
+}
+
+.result-button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  background: transparent;
+  text-align: left;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-button + .result-button {
+  border-top: 1px solid rgba(33, 6, 18, 0.12);
+}
+
+.result-button.is-active {
+  background: rgba(33, 6, 18, 0.1);
+}
+
+.overlay-close {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  aspect-ratio: 1;
+  padding: 0;
+  place-items: center;
+  color: var(--ink);
+  background: var(--panel);
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(30, 8, 28, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+.overlay-close svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.8;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-height: 700px) {
+  body.weather-hot {
+    background-position: 64% 70%;
+  }
+
+  body.weather-rain {
+    background-position: 71% 69%;
+  }
+
+  body.weather-clear,
+  body.weather-clear-morning,
+  body.weather-clear-evening {
+    background-position: 52% 71%;
+  }
+
+  body.weather-cloudy {
+    background-position: 52% 68%;
+  }
+
+  body.weather-fog {
+    background-position: 68% 72%;
+  }
+
+  .temperature {
+    font-size: clamp(5.7rem, 30vw, 8rem);
+  }
+
+  .condition {
+    margin-top: 10px;
+  }
+}
+
+@media (min-width: 560px) {
+  body.weather-hot {
+    background-position: 56% 70%;
+  }
+
+  body.weather-rain {
+    background-position: 61% 70%;
+  }
+
+  body.weather-clear,
+  body.weather-clear-morning,
+  body.weather-clear-evening {
+    background-position: 50% 72%;
+  }
+
+  body.weather-cloudy {
+    background-position: 50% 68%;
+  }
+
+  body.weather-fog {
+    background-position: 61% 72%;
+  }
+}
