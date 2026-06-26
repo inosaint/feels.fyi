@@ -9,8 +9,7 @@ struct SearchView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
+            SearchBackdropView()
 
             SearchContentView(
                 viewModel: viewModel,
@@ -139,6 +138,15 @@ struct SearchView: View {
     }
 }
 
+private struct SearchBackdropView: View {
+    var body: some View {
+        Rectangle()
+            .fill(.ultraThinMaterial)
+            .overlay(Color.white.opacity(0.08))
+            .ignoresSafeArea()
+    }
+}
+
 private struct SearchContentView: View {
     let viewModel: WeatherViewModel
     let selectCity: (City) -> Void
@@ -199,18 +207,18 @@ private struct SearchEmptyState: View {
         VStack(spacing: 13) {
             Image(systemName: systemImage)
                 .font(.system(size: 36, weight: .regular))
-                .foregroundStyle(Color.gray.opacity(0.86))
+                .foregroundStyle(WeatherPalette.ink.opacity(0.64))
                 .padding(.bottom, 4)
 
             Text(title)
                 .font(.system(size: 18, weight: .semibold))
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.black)
+                .foregroundStyle(WeatherPalette.ink)
 
             Text(description)
                 .font(.system(size: 15, weight: .regular))
                 .multilineTextAlignment(.center)
-                .foregroundStyle(Color.gray)
+                .foregroundStyle(WeatherPalette.ink.opacity(0.78))
         }
         .frame(maxWidth: .infinity)
     }

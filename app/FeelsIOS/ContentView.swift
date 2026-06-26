@@ -19,30 +19,23 @@ struct ContentView: View {
             WeatherSceneView(viewModel: viewModel)
                 .opacity(isSplashVisible && !isSplashResolving ? 0 : 1)
 
-            if isSplashVisible {
-                SplashView(isResolving: isSplashResolving)
+            if viewModel.isSearchPresented {
+                SearchView(viewModel: viewModel)
                     .transition(.opacity)
                     .zIndex(1)
             }
+
+            if isSplashVisible {
+                SplashView(isResolving: isSplashResolving)
+                    .transition(.opacity)
+                    .zIndex(2)
+            }
         }
+        .animation(.easeOut(duration: 0.22), value: viewModel.isSearchPresented)
         .task {
             async let initialize: Void = viewModel.initialize()
             await resolveSplash()
             _ = await initialize
-        }
-        .fullScreenCover(
-            isPresented: Binding(
-                get: { viewModel.isSearchPresented },
-                set: { isPresented in
-                    if isPresented {
-                        viewModel.isSearchPresented = true
-                    } else {
-                        viewModel.dismissSearch()
-                    }
-                }
-            )
-        ) {
-            SearchView(viewModel: viewModel)
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(viewModel.statusMessage)

@@ -35,7 +35,11 @@ extension View {
                 .shadow(color: .black.opacity(0.16), radius: 23, x: 0, y: 18)
         } else {
             self
-                .background(.white.opacity(0.34), in: Capsule())
+                .background(.ultraThinMaterial, in: Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(.white.opacity(0.3), lineWidth: 0.5)
+                )
                 .shadow(color: .black.opacity(0.16), radius: 23, x: 0, y: 18)
         }
     }
