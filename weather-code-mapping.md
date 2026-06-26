@@ -33,6 +33,12 @@ Reference for mapping Open-Meteo WMO weather codes to illustration states.
 | Rain / Storm / Windy | 82, 95, 96, 99; or high wind when not raining | Heavy rain and wind |
 | Cold | Temperature < 18 C; freezing drizzle/rain; snow codes | Monkey cap |
 
+## Pending Illustration Rules
+
+| State | Rule | Current fallback |
+| --- | --- | --- |
+| Windy | Wind speed >= 38 km/h when the condition is not rain or storm | Uses the Rain / Storm / Windy heavy rain and wind asset |
+
 ## Current App Mapping
 
 | State | Current asset |

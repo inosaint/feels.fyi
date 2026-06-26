@@ -1,0 +1,913 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01A000000000000000000101 /* WeatherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000001 /* WeatherApp.swift */; };
+		01A000000000000000000102 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000002 /* ContentView.swift */; };
+		01A000000000000000000105 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000005 /* LocationManager.swift */; };
+		01A000000000000000000107 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000007 /* Assets.xcassets */; };
+		01A000000000000000000108 /* WeatherLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000008 /* WeatherLogicTests.swift */; };
+		01A00000000000000000010A /* CaveatBrush-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000C /* CaveatBrush-Regular.ttf */; };
+		01A00000000000000000010B /* FeelsIOSWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000D /* FeelsIOSWidget.swift */; };
+		01A00000000000000000010C /* FeelsMacWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000E /* FeelsMacWidget.swift */; };
+		01A00000000000000000010D /* FeelsWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000F /* FeelsWatchApp.swift */; };
+		01A00000000000000000010E /* FeelsWatchContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000010 /* FeelsWatchContentView.swift */; };
+		01A00000000000000000010F /* FeelsIOSWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000013 /* FeelsIOSWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		01A000000000000000000120 /* WeatherModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000014 /* WeatherModels.swift */; };
+		01A000000000000000000121 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000015 /* WeatherService.swift */; };
+		01A000000000000000000122 /* WeatherPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000016 /* WeatherPersistence.swift */; };
+		01A000000000000000000123 /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000017 /* WeatherViewModel.swift */; };
+		01A000000000000000000124 /* WeatherSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000018 /* WeatherSceneView.swift */; };
+		01A000000000000000000125 /* WeatherBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000019 /* WeatherBackgroundView.swift */; };
+		01A000000000000000000126 /* WeatherReadoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000001A /* WeatherReadoutView.swift */; };
+		01A000000000000000000127 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000001B /* SearchView.swift */; };
+		01A000000000000000000128 /* GlassStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000001C /* GlassStyles.swift */; };
+		01A000000000000000000129 /* WeatherPreviewFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000001D /* WeatherPreviewFixtures.swift */; };
+		01A00000000000000000012A /* WeatherModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000014 /* WeatherModels.swift */; };
+		01A00000000000000000012B /* WeatherPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000016 /* WeatherPersistence.swift */; };
+		01A00000000000000000012C /* WeatherModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000014 /* WeatherModels.swift */; };
+		01A00000000000000000012D /* WeatherPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000016 /* WeatherPersistence.swift */; };
+		01A00000000000000000012E /* WeatherModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000014 /* WeatherModels.swift */; };
+		01A00000000000000000012F /* WeatherPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000016 /* WeatherPersistence.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		01A000000000000000000201 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A000000000000000000301 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 01A000000000000000000401;
+			remoteInfo = FeelsIOS;
+		};
+		01A000000000000000000203 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 01A000000000000000000301 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 01A000000000000000000405;
+			remoteInfo = FeelsIOSWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		01A000000000000000000001 /* WeatherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherApp.swift; sourceTree = "<group>"; };
+		01A000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		01A000000000000000000005 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		01A000000000000000000007 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		01A000000000000000000008 /* WeatherLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherLogicTests.swift; sourceTree = "<group>"; };
+		01A000000000000000000009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		01A00000000000000000000A /* feels.fyi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = feels.fyi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		01A00000000000000000000B /* FeelsIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FeelsIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		01A00000000000000000000C /* CaveatBrush-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaveatBrush-Regular.ttf"; sourceTree = "<group>"; };
+		01A00000000000000000000D /* FeelsIOSWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeelsIOSWidget.swift; sourceTree = "<group>"; };
+		01A00000000000000000000E /* FeelsMacWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeelsMacWidget.swift; sourceTree = "<group>"; };
+		01A00000000000000000000F /* FeelsWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeelsWatchApp.swift; sourceTree = "<group>"; };
+		01A000000000000000000010 /* FeelsWatchContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeelsWatchContentView.swift; sourceTree = "<group>"; };
+		01A000000000000000000011 /* FeelsMacWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FeelsMacWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		01A000000000000000000012 /* FeelsWatchExtension.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FeelsWatchExtension.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		01A000000000000000000013 /* FeelsIOSWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FeelsIOSWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		01A000000000000000000014 /* WeatherModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherModels.swift; sourceTree = "<group>"; };
+		01A000000000000000000015 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
+		01A000000000000000000016 /* WeatherPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherPersistence.swift; sourceTree = "<group>"; };
+		01A000000000000000000017 /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
+		01A000000000000000000018 /* WeatherSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherSceneView.swift; sourceTree = "<group>"; };
+		01A000000000000000000019 /* WeatherBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherBackgroundView.swift; sourceTree = "<group>"; };
+		01A00000000000000000001A /* WeatherReadoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherReadoutView.swift; sourceTree = "<group>"; };
+		01A00000000000000000001B /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		01A00000000000000000001C /* GlassStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassStyles.swift; sourceTree = "<group>"; };
+		01A00000000000000000001D /* WeatherPreviewFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherPreviewFixtures.swift; sourceTree = "<group>"; };
+		01A00000000000000000001E /* WEATHER_ASSET_QA.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = WEATHER_ASSET_QA.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		01A000000000000000000501 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000502 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000503 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000504 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000505 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		01A000000000000000000601 = {
+			isa = PBXGroup;
+			children = (
+				01A000000000000000000609 /* FeelsCore */,
+				01A000000000000000000602 /* FeelsIOS */,
+				01A000000000000000000603 /* FeelsIOSTests */,
+				01A000000000000000000606 /* FeelsIOSWidget */,
+				01A000000000000000000607 /* FeelsMacWidget */,
+				01A000000000000000000608 /* FeelsWatchExtension */,
+				01A000000000000000000604 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		01A000000000000000000602 /* FeelsIOS */ = {
+			isa = PBXGroup;
+			children = (
+				01A000000000000000000001 /* WeatherApp.swift */,
+				01A000000000000000000002 /* ContentView.swift */,
+				01A000000000000000000018 /* WeatherSceneView.swift */,
+				01A000000000000000000019 /* WeatherBackgroundView.swift */,
+				01A00000000000000000001A /* WeatherReadoutView.swift */,
+				01A00000000000000000001B /* SearchView.swift */,
+				01A00000000000000000001C /* GlassStyles.swift */,
+				01A00000000000000000001D /* WeatherPreviewFixtures.swift */,
+				01A000000000000000000005 /* LocationManager.swift */,
+				01A000000000000000000007 /* Assets.xcassets */,
+				01A000000000000000000605 /* Fonts */,
+				01A00000000000000000001E /* WEATHER_ASSET_QA.md */,
+				01A000000000000000000009 /* Info.plist */,
+			);
+			path = FeelsIOS;
+			sourceTree = "<group>";
+		};
+		01A000000000000000000603 /* FeelsIOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				01A000000000000000000008 /* WeatherLogicTests.swift */,
+			);
+			path = FeelsIOSTests;
+			sourceTree = "<group>";
+		};
+		01A000000000000000000604 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				01A00000000000000000000A /* feels.fyi.app */,
+				01A00000000000000000000B /* FeelsIOSTests.xctest */,
+				01A000000000000000000013 /* FeelsIOSWidget.appex */,
+				01A000000000000000000011 /* FeelsMacWidget.appex */,
+				01A000000000000000000012 /* FeelsWatchExtension.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		01A000000000000000000605 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				01A00000000000000000000C /* CaveatBrush-Regular.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		01A000000000000000000606 /* FeelsIOSWidget */ = {
+			isa = PBXGroup;
+			children = (
+				01A00000000000000000000D /* FeelsIOSWidget.swift */,
+			);
+			path = FeelsIOSWidget;
+			sourceTree = "<group>";
+		};
+		01A000000000000000000607 /* FeelsMacWidget */ = {
+			isa = PBXGroup;
+			children = (
+				01A00000000000000000000E /* FeelsMacWidget.swift */,
+			);
+			path = FeelsMacWidget;
+			sourceTree = "<group>";
+		};
+		01A000000000000000000608 /* FeelsWatchExtension */ = {
+			isa = PBXGroup;
+			children = (
+				01A00000000000000000000F /* FeelsWatchApp.swift */,
+				01A000000000000000000010 /* FeelsWatchContentView.swift */,
+			);
+			path = FeelsWatchExtension;
+			sourceTree = "<group>";
+		};
+		01A000000000000000000609 /* FeelsCore */ = {
+			isa = PBXGroup;
+			children = (
+				01A000000000000000000014 /* WeatherModels.swift */,
+				01A000000000000000000015 /* WeatherService.swift */,
+				01A000000000000000000016 /* WeatherPersistence.swift */,
+				01A000000000000000000017 /* WeatherViewModel.swift */,
+			);
+			path = FeelsCore;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		01A000000000000000000401 /* FeelsIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01A000000000000000000701 /* Build configuration list for PBXNativeTarget "FeelsIOS" */;
+			buildPhases = (
+				01A000000000000000000801 /* Sources */,
+				01A000000000000000000501 /* Frameworks */,
+				01A000000000000000000901 /* Resources */,
+				01A000000000000000000906 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				01A000000000000000000204 /* PBXTargetDependency */,
+			);
+			name = FeelsIOS;
+			productName = FeelsIOS;
+			productReference = 01A00000000000000000000A /* feels.fyi.app */;
+			productType = "com.apple.product-type.application";
+		};
+		01A000000000000000000402 /* FeelsIOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01A000000000000000000702 /* Build configuration list for PBXNativeTarget "FeelsIOSTests" */;
+			buildPhases = (
+				01A000000000000000000802 /* Sources */,
+				01A000000000000000000502 /* Frameworks */,
+				01A000000000000000000902 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				01A000000000000000000202 /* PBXTargetDependency */,
+			);
+			name = FeelsIOSTests;
+			productName = FeelsIOSTests;
+			productReference = 01A00000000000000000000B /* FeelsIOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		01A000000000000000000403 /* FeelsMacWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01A000000000000000000704 /* Build configuration list for PBXNativeTarget "FeelsMacWidget" */;
+			buildPhases = (
+				01A000000000000000000803 /* Sources */,
+				01A000000000000000000503 /* Frameworks */,
+				01A000000000000000000903 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FeelsMacWidget;
+			productName = FeelsMacWidget;
+			productReference = 01A000000000000000000011 /* FeelsMacWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		01A000000000000000000404 /* FeelsWatchExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01A000000000000000000705 /* Build configuration list for PBXNativeTarget "FeelsWatchExtension" */;
+			buildPhases = (
+				01A000000000000000000804 /* Sources */,
+				01A000000000000000000504 /* Frameworks */,
+				01A000000000000000000904 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FeelsWatchExtension;
+			productName = FeelsWatchExtension;
+			productReference = 01A000000000000000000012 /* FeelsWatchExtension.app */;
+			productType = "com.apple.product-type.application";
+		};
+		01A000000000000000000405 /* FeelsIOSWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 01A000000000000000000706 /* Build configuration list for PBXNativeTarget "FeelsIOSWidget" */;
+			buildPhases = (
+				01A000000000000000000805 /* Sources */,
+				01A000000000000000000505 /* Frameworks */,
+				01A000000000000000000905 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FeelsIOSWidget;
+			productName = FeelsIOSWidget;
+			productReference = 01A000000000000000000013 /* FeelsIOSWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		01A000000000000000000301 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					01A000000000000000000401 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					01A000000000000000000402 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 01A000000000000000000401;
+					};
+					01A000000000000000000403 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					01A000000000000000000404 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					01A000000000000000000405 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 01A000000000000000000703 /* Build configuration list for PBXProject "FeelsIOS" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 01A000000000000000000601;
+			productRefGroup = 01A000000000000000000604 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				01A000000000000000000401 /* FeelsIOS */,
+				01A000000000000000000402 /* FeelsIOSTests */,
+				01A000000000000000000405 /* FeelsIOSWidget */,
+				01A000000000000000000403 /* FeelsMacWidget */,
+				01A000000000000000000404 /* FeelsWatchExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		01A000000000000000000901 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01A000000000000000000107 /* Assets.xcassets in Resources */,
+				01A00000000000000000010A /* CaveatBrush-Regular.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000902 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000903 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000904 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000905 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		01A000000000000000000906 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				01A00000000000000000010F /* FeelsIOSWidget.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		01A000000000000000000801 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01A000000000000000000101 /* WeatherApp.swift in Sources */,
+				01A000000000000000000102 /* ContentView.swift in Sources */,
+				01A000000000000000000105 /* LocationManager.swift in Sources */,
+				01A000000000000000000120 /* WeatherModels.swift in Sources */,
+				01A000000000000000000121 /* WeatherService.swift in Sources */,
+				01A000000000000000000122 /* WeatherPersistence.swift in Sources */,
+				01A000000000000000000123 /* WeatherViewModel.swift in Sources */,
+				01A000000000000000000124 /* WeatherSceneView.swift in Sources */,
+				01A000000000000000000125 /* WeatherBackgroundView.swift in Sources */,
+				01A000000000000000000126 /* WeatherReadoutView.swift in Sources */,
+				01A000000000000000000127 /* SearchView.swift in Sources */,
+				01A000000000000000000128 /* GlassStyles.swift in Sources */,
+				01A000000000000000000129 /* WeatherPreviewFixtures.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000802 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01A000000000000000000108 /* WeatherLogicTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000803 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01A00000000000000000012C /* WeatherModels.swift in Sources */,
+				01A00000000000000000012D /* WeatherPersistence.swift in Sources */,
+				01A00000000000000000010C /* FeelsMacWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000804 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01A00000000000000000012E /* WeatherModels.swift in Sources */,
+				01A00000000000000000012F /* WeatherPersistence.swift in Sources */,
+				01A00000000000000000010D /* FeelsWatchApp.swift in Sources */,
+				01A00000000000000000010E /* FeelsWatchContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		01A000000000000000000805 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				01A00000000000000000012A /* WeatherModels.swift in Sources */,
+				01A00000000000000000012B /* WeatherPersistence.swift in Sources */,
+				01A00000000000000000010B /* FeelsIOSWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		01A000000000000000000202 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 01A000000000000000000401 /* FeelsIOS */;
+			targetProxy = 01A000000000000000000201 /* PBXContainerItemProxy */;
+		};
+		01A000000000000000000204 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 01A000000000000000000405 /* FeelsIOSWidget */;
+			targetProxy = 01A000000000000000000203 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		01A000000000000000000A01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		01A000000000000000000A02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		01A000000000000000000B01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = KD86X8TWM2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FeelsIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather;
+				PRODUCT_NAME = feels.fyi;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		01A000000000000000000B02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = KD86X8TWM2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FeelsIOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather;
+				PRODUCT_NAME = feels.fyi;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		01A000000000000000000C01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/feels.fyi.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/feels.fyi";
+			};
+			name = Debug;
+		};
+		01A000000000000000000C02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/feels.fyi.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/feels.fyi";
+			};
+			name = Release;
+		};
+		01A000000000000000000D01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KD86X8TWM2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FeelsIOSWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		01A000000000000000000D02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KD86X8TWM2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FeelsIOSWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		01A000000000000000000E01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KD86X8TWM2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FeelsMacWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather.macwidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		01A000000000000000000E02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KD86X8TWM2;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FeelsMacWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather.macwidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		01A000000000000000000F01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KD86X8TWM2;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "feels.fyi";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather.watch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		01A000000000000000000F02 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KD86X8TWM2;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "feels.fyi";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = fyi.feels.weather.watch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		01A000000000000000000701 /* Build configuration list for PBXNativeTarget "FeelsIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01A000000000000000000B01 /* Debug */,
+				01A000000000000000000B02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		01A000000000000000000702 /* Build configuration list for PBXNativeTarget "FeelsIOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01A000000000000000000C01 /* Debug */,
+				01A000000000000000000C02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		01A000000000000000000703 /* Build configuration list for PBXProject "FeelsIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01A000000000000000000A01 /* Debug */,
+				01A000000000000000000A02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		01A000000000000000000704 /* Build configuration list for PBXNativeTarget "FeelsMacWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01A000000000000000000E01 /* Debug */,
+				01A000000000000000000E02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		01A000000000000000000705 /* Build configuration list for PBXNativeTarget "FeelsWatchExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01A000000000000000000F01 /* Debug */,
+				01A000000000000000000F02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		01A000000000000000000706 /* Build configuration list for PBXNativeTarget "FeelsIOSWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				01A000000000000000000D01 /* Debug */,
+				01A000000000000000000D02 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 01A000000000000000000301 /* Project object */;
+}

@@ -1,2 +1,0 @@
-Target dependency graph (1 target)
-Target 'WeatherIOS' in project 'WeatherIOS' (no dependencies)
