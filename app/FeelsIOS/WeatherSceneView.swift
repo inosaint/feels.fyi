@@ -1,4 +1,14 @@
 import SwiftUI
+import UIKit
+
+@MainActor
+enum AppHaptics {
+    static func selection() {
+        let generator = UISelectionFeedbackGenerator()
+        generator.prepare()
+        generator.selectionChanged()
+    }
+}
 
 struct WeatherSceneView: View {
     let viewModel: WeatherViewModel
@@ -59,6 +69,7 @@ struct WeatherSceneView: View {
 
     private var locationButton: some View {
         Button {
+            AppHaptics.selection()
             viewModel.presentSearch()
         } label: {
             HStack(spacing: 8) {

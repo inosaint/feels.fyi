@@ -79,11 +79,13 @@ struct SearchView: View {
                 .textInputAutocapitalization(.words)
                 .textContentType(.none)
                 .onSubmit {
+                    triggerActionHaptic()
                     viewModel.submitSearch()
                 }
 
                 if !viewModel.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     Button {
+                        triggerActionHaptic()
                         viewModel.updateSearchQuery("")
                     } label: {
                         Image(systemName: "xmark.circle.fill")
@@ -115,6 +117,7 @@ struct SearchView: View {
     }
 
     private func selectCity(_ city: City) {
+        triggerActionHaptic()
         isSearchFocused = false
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(120))
@@ -123,11 +126,16 @@ struct SearchView: View {
     }
 
     private func dismissSearch() {
+        triggerActionHaptic()
         isSearchFocused = false
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(120))
             viewModel.dismissSearch()
         }
+    }
+
+    private func triggerActionHaptic() {
+        AppHaptics.selection()
     }
 }
 

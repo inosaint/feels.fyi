@@ -9,7 +9,7 @@ extension View {
     func searchFieldGlass() -> some View {
         if #available(iOS 26, *) {
             self
-                .glassEffect(.regular.tint(.white.opacity(0.24)).interactive(), in: .capsule)
+                .glassEffect(.regular.interactive(), in: .capsule)
         } else {
             self
                 .background(Color(.secondarySystemBackground), in: Capsule())
@@ -20,7 +20,7 @@ extension View {
     func searchActionGlass() -> some View {
         if #available(iOS 26, *) {
             self
-                .glassEffect(.regular.tint(.white.opacity(0.14)).interactive(), in: .capsule)
+                .glassEffect(.regular.interactive(), in: .capsule)
         } else {
             self
                 .background(Color(.secondarySystemBackground), in: Capsule())
@@ -31,7 +31,7 @@ extension View {
     func locationPillGlass() -> some View {
         if #available(iOS 26, *) {
             self
-                .glassEffect(.regular.tint(.white.opacity(0.22)).interactive(), in: .capsule)
+                .glassEffect(.regular.interactive(), in: .capsule)
                 .shadow(color: .black.opacity(0.16), radius: 23, x: 0, y: 18)
         } else {
             self
