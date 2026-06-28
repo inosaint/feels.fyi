@@ -2,8 +2,11 @@ import SwiftUI
 
 struct SearchView: View {
     let viewModel: WeatherViewModel
+    let bottomContentInset: CGFloat
+    let selectCityAction: (City) -> Void
+    let dismissSearchAction: () -> Void
     @FocusState private var isSearchFocused: Bool
-    @State private var focusTask: Task<Void, Never>?
+    @State private var retainedBottomContentInset: CGFloat = 0
 
     private static let keyboardBarGap: CGFloat = 12
     private static let searchFieldHeight: CGFloat = 48
@@ -15,13 +18,12 @@ struct SearchView: View {
 
                 SearchContentView(
                     viewModel: viewModel,
+                    bottomContentInset: resolvedBottomContentInset,
                     selectCity: selectCity(_:)
                 )
             }
             .opacity(searchOverlayOpacity)
-            .mask {
-                SearchOverlayRadialMask(isPresented: viewModel.isSearchPresented)
-            }
+            .blur(radius: searchOverlayBlurRadius)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(searchOverlayAnimation, value: viewModel.isSearchPresented)
@@ -32,22 +34,10 @@ struct SearchView: View {
         */
         .environment(\.locale, Locale(identifier: "en_US"))
         .onAppear {
-            focusTask?.cancel()
-            focusTask = Task {
-                try? await Task.sleep(for: .milliseconds(360))
-                guard !Task.isCancelled else {
-                    return
-                }
-
-                await MainActor.run {
-                    isSearchFocused = true
-                }
-            }
+            retainBottomContentInsetIfNeeded(bottomContentInset)
         }
-        .onDisappear {
-            focusTask?.cancel()
-            focusTask = nil
-            isSearchFocused = false
+        .onChange(of: bottomContentInset) { _, inset in
+            retainBottomContentInsetIfNeeded(inset)
         }
     }
 
@@ -167,15 +157,12 @@ struct SearchView: View {
 
     private var closeButtonSlot: some View {
         ZStack {
-            if viewModel.isSearchPresented {
-                closeButton
-                    .transition(.identity)
-            }
+            closeButton
+                .opacity(closeButtonOpacity)
+                .scaleEffect(viewModel.isSearchPresented ? 1 : 0.82)
+                .allowsHitTesting(viewModel.isSearchPresented)
         }
         .frame(width: 44, height: 44)
-        .transaction { transaction in
-            transaction.disablesAnimations = true
-        }
     }
 
     private var closeButton: some View {
@@ -203,7 +190,19 @@ struct SearchView: View {
         viewModel.isSearchPresented ? 1 : 0
     }
 
+    private var searchOverlayBlurRadius: CGFloat {
+        viewModel.isSearchPresented ? 0 : 10
+    }
+
+    private var resolvedBottomContentInset: CGFloat {
+        viewModel.isSearchPresented ? bottomContentInset : retainedBottomContentInset
+    }
+
     private var searchFieldContentOpacity: Double {
+        viewModel.isSearchPresented ? 1 : 0
+    }
+
+    private var closeButtonOpacity: Double {
         viewModel.isSearchPresented ? 1 : 0
     }
 
@@ -221,20 +220,20 @@ struct SearchView: View {
 
     private func selectCity(_ city: City) {
         triggerActionHaptic()
-        isSearchFocused = false
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(120))
-            viewModel.selectCity(city)
-        }
+        selectCityAction(city)
     }
 
     private func dismissSearch() {
         triggerActionHaptic()
-        isSearchFocused = false
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(120))
-            viewModel.dismissSearch()
+        dismissSearchAction()
+    }
+
+    private func retainBottomContentInsetIfNeeded(_ inset: CGFloat) {
+        guard viewModel.isSearchPresented && inset > 0 else {
+            return
         }
+
+        retainedBottomContentInset = inset
     }
 
     private func triggerActionHaptic() {
@@ -244,37 +243,44 @@ struct SearchView: View {
 
 struct SearchBottomBarView: View {
     let viewModel: WeatherViewModel
-    @FocusState private var isSearchFocused: Bool
+    @Binding var shouldFocusSearchField: Bool
+    let keyboardOffset: CGFloat
+    let collapsedWidth: CGFloat
+    let dismissSearchAction: () -> Void
+    @FocusState private var isTextFieldFocused: Bool
     @State private var focusTask: Task<Void, Never>?
 
-    private static let keyboardBarGap: CGFloat = 12
     private static let searchFieldHeight: CGFloat = 48
 
     var body: some View {
-        ZStack {
-            Color.clear
-                .allowsHitTesting(false)
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            searchBottomBar
-        }
+        searchBottomBar
+            .frame(width: searchChromeWidth)
+            .padding(.bottom, keyboardOffset)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+            .animation(searchFieldContentAnimation, value: viewModel.isSearchPresented)
         .onAppear {
-            focusTask?.cancel()
-            focusTask = Task {
-                try? await Task.sleep(for: .milliseconds(360))
-                guard !Task.isCancelled else {
-                    return
-                }
-
-                await MainActor.run {
-                    isSearchFocused = true
-                }
+            scheduleSearchFocus()
+        }
+        .onChange(of: shouldFocusSearchField) { _, isFocused in
+            guard isTextFieldFocused != isFocused else {
+                return
             }
+
+            isTextFieldFocused = isFocused
+        }
+        .onChange(of: isTextFieldFocused) { _, isFocused in
+            guard shouldFocusSearchField != isFocused else {
+                return
+            }
+
+            shouldFocusSearchField = isFocused
         }
         .onDisappear {
             focusTask?.cancel()
             focusTask = nil
-            isSearchFocused = false
+            isTextFieldFocused = false
+            shouldFocusSearchField = false
         }
     }
 
@@ -288,7 +294,6 @@ struct SearchBottomBarView: View {
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
-        .padding(.bottom, Self.keyboardBarGap)
         .animation(searchFieldContentAnimation, value: viewModel.isSearchPresented)
     }
 
@@ -330,7 +335,7 @@ struct SearchBottomBarView: View {
                     set: { viewModel.updateSearchQuery($0) }
                 )
             )
-            .focused($isSearchFocused)
+            .focused($isTextFieldFocused)
             .textFieldStyle(.plain)
             .foregroundStyle(.clear)
             .tint(WeatherPalette.ink)
@@ -362,15 +367,12 @@ struct SearchBottomBarView: View {
 
     private var closeButtonSlot: some View {
         ZStack {
-            if viewModel.isSearchPresented {
-                closeButton
-                    .transition(.identity)
-            }
+            closeButton
+                .opacity(closeButtonOpacity)
+                .scaleEffect(viewModel.isSearchPresented ? 1 : 0.82)
+                .allowsHitTesting(viewModel.isSearchPresented)
         }
         .frame(width: 44, height: 44)
-        .transaction { transaction in
-            transaction.disablesAnimations = true
-        }
     }
 
     private var closeButton: some View {
@@ -390,19 +392,38 @@ struct SearchBottomBarView: View {
         viewModel.isSearchPresented ? 1 : 0
     }
 
+    private var closeButtonOpacity: Double {
+        viewModel.isSearchPresented ? 1 : 0
+    }
+
+    private var searchChromeWidth: CGFloat? {
+        viewModel.isSearchPresented ? nil : collapsedWidth
+    }
+
     private var searchFieldContentAnimation: Animation {
         viewModel.isSearchPresented
             ? .easeOut(duration: 0.12)
             : .timingCurve(0.32, 0, 0.67, 0, duration: 0.06)
     }
 
+    private func scheduleSearchFocus() {
+        focusTask?.cancel()
+        focusTask = Task { @MainActor in
+            await Task.yield()
+            guard !Task.isCancelled else {
+                return
+            }
+
+            shouldFocusSearchField = true
+            isTextFieldFocused = true
+        }
+    }
+
     private func dismissSearch() {
         triggerActionHaptic()
-        isSearchFocused = false
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(120))
-            viewModel.dismissSearch()
-        }
+        shouldFocusSearchField = false
+        isTextFieldFocused = false
+        dismissSearchAction()
     }
 
     private func triggerActionHaptic() {
@@ -439,6 +460,7 @@ private struct SearchBackdropView: View {
 
 private struct SearchContentView: View {
     let viewModel: WeatherViewModel
+    let bottomContentInset: CGFloat
     let selectCity: (City) -> Void
 
     private var trimmedQuery: String {
@@ -450,6 +472,23 @@ private struct SearchContentView: View {
     }
 
     var body: some View {
+        GeometryReader { proxy in
+            let horizontalPadding: CGFloat = isShowingEmptyState ? 28 : 0
+            let contentWidth = max(0, proxy.size.width - horizontalPadding * 2)
+            let contentHeight = max(0, proxy.size.height - bottomContentInset)
+
+            searchContent
+                .frame(
+                    width: contentWidth,
+                    height: contentHeight,
+                    alignment: isShowingEmptyState ? .center : .top
+                )
+                .padding(.horizontal, horizontalPadding)
+                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
+        }
+    }
+
+    private var searchContent: some View {
         ZStack {
             if trimmedQuery.count < 2 {
                 SearchEmptyState(
@@ -483,8 +522,6 @@ private struct SearchContentView: View {
                 .environment(\.locale, Locale(identifier: "en_US"))
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: isShowingEmptyState ? .center : .top)
-        .padding(.horizontal, isShowingEmptyState ? 28 : 0)
     }
 }
 

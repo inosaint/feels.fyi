@@ -1,7 +1,10 @@
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     private static let searchKeyboardBarGap: CGFloat = 12
+    private static let searchBarHorizontalPadding: CGFloat = 16
+    private static let searchBarTopPadding: CGFloat = 8
     private static let searchFieldHeight: CGFloat = 48
     private static let searchCloseButtonSize: CGFloat = 44
 
@@ -9,14 +12,14 @@ struct ContentView: View {
     @State private var isSplashVisible = true
     @State private var isSplashResolving = false
     @State private var isSearchOverlayVisible = false
+    @State private var isSearchFieldFocused = false
+    @State private var keyboardTransition = KeyboardTransition()
     @State private var searchOverlayDismissTask: Task<Void, Never>?
     @State private var locationPillSize: CGSize = .zero
     @Namespace private var searchTransitionNamespace
 
     private var searchPresentationAnimation: Animation {
-        viewModel.isSearchPresented
-            ? .spring(response: 0.34, dampingFraction: 0.9)
-            : .timingCurve(0.32, 0, 0.67, 0, duration: 0.22)
+        keyboardTransition.animation
     }
 
     init(viewModel: WeatherViewModel? = nil) {
@@ -29,7 +32,11 @@ struct ContentView: View {
     }
 
     var body: some View {
-        layeredContent
+        GeometryReader { proxy in
+            layeredContent(bottomSafeAreaInset: proxy.safeAreaInsets.bottom)
+                .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
             .animation(searchPresentationAnimation, value: viewModel.isSearchPresented)
             .onPreferenceChange(LocationPillSizePreferenceKey.self) { size in
                 guard size != .zero else {
@@ -46,16 +53,25 @@ struct ContentView: View {
             .onAppear {
                 isSearchOverlayVisible = viewModel.isSearchPresented
             }
+            .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { notification in
+                let nextTransition = KeyboardTransition(notification: notification)
+                withAnimation(nextTransition.animation) {
+                    keyboardTransition = nextTransition
+                }
+            }
             .onChange(of: viewModel.isSearchPresented) { _, isPresented in
                 searchOverlayDismissTask?.cancel()
 
                 if isPresented {
+                    isSearchFieldFocused = true
                     withAnimation(searchPresentationAnimation) {
                         isSearchOverlayVisible = true
                     }
                 } else {
+                    isSearchFieldFocused = false
+                    let removalDelay = keyboardTransition.overlayRemovalDelay
                     searchOverlayDismissTask = Task { @MainActor in
-                        try? await Task.sleep(for: .milliseconds(340))
+                        try? await Task.sleep(for: removalDelay)
                         guard !Task.isCancelled else {
                             return
                         }
@@ -70,24 +86,31 @@ struct ContentView: View {
             .accessibilityLabel(viewModel.statusMessage)
     }
 
-    private var layeredContent: some View {
-        ZStack {
+    private func layeredContent(bottomSafeAreaInset: CGFloat) -> some View {
+        let keyboardOffset = searchKeyboardOffset(bottomSafeAreaInset: bottomSafeAreaInset)
+
+        return ZStack {
             WeatherSceneView(
                 viewModel: viewModel,
                 showsLocationButton: false
             )
                 .opacity(isSplashVisible && !isSplashResolving ? 0 : 1)
 
-            bottomGlassLayer
+            bottomGlassLayer(keyboardOffset: keyboardOffset)
+                .ignoresSafeArea(.keyboard, edges: .bottom)
                 .zIndex(0.5)
 
             locationButtonLayer
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                .ignoresSafeArea(.keyboard, edges: .bottom)
                 .zIndex(0.75)
 
             if isSearchOverlayVisible {
                 SearchView(
-                    viewModel: viewModel
+                    viewModel: viewModel,
+                    bottomContentInset: searchContentBottomInset(keyboardOffset: keyboardOffset),
+                    selectCityAction: selectSearchCity,
+                    dismissSearchAction: dismissSearchAfterKeyboard
                 )
                     .transition(.opacity)
                     .allowsHitTesting(viewModel.isSearchPresented)
@@ -95,7 +118,13 @@ struct ContentView: View {
             }
 
             if isSearchOverlayVisible {
-                SearchBottomBarView(viewModel: viewModel)
+                SearchBottomBarView(
+                    viewModel: viewModel,
+                    shouldFocusSearchField: $isSearchFieldFocused,
+                    keyboardOffset: keyboardOffset,
+                    collapsedWidth: searchChromeCollapsedWidth,
+                    dismissSearchAction: dismissSearchAfterKeyboard
+                )
                     .allowsHitTesting(viewModel.isSearchPresented)
                     .zIndex(0.75)
             }
@@ -109,16 +138,14 @@ struct ContentView: View {
     }
 
     @ViewBuilder
-    private var bottomGlassLayer: some View {
+    private func bottomGlassLayer(keyboardOffset: CGFloat) -> some View {
         if viewModel.hasWeatherData {
-            if viewModel.isSearchPresented {
-                ZStack {
-                    Color.clear
-                }
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    searchGlassBottomBar
-                }
-                .allowsHitTesting(false)
+            if isSearchOverlayVisible {
+                searchGlassBottomBar
+                    .frame(width: searchChromeWidth)
+                    .padding(.bottom, keyboardOffset)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                    .allowsHitTesting(false)
             } else {
                 locationPillGlassSurface
                     .padding(.horizontal, 22)
@@ -137,36 +164,81 @@ struct ContentView: View {
 
             searchGlassRims
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .padding(.bottom, Self.searchKeyboardBarGap)
+        .padding(.horizontal, Self.searchBarHorizontalPadding)
+        .padding(.top, Self.searchBarTopPadding)
+    }
+
+    private var searchChromeWidth: CGFloat? {
+        viewModel.isSearchPresented ? nil : searchChromeCollapsedWidth
+    }
+
+    private var searchChromeCollapsedWidth: CGFloat {
+        locationPillGlassWidth + Self.searchBarHorizontalPadding * 2
     }
 
     private var searchGlassSurfaces: some View {
-        HStack(spacing: 12) {
-            Color.clear
-                .frame(height: Self.searchFieldHeight)
-                .frame(maxWidth: .infinity)
-                .nativeSearchFieldGlass()
-                .nativeSearchPillGlassTransition(in: searchTransitionNamespace)
+        Group {
+            if viewModel.isSearchPresented {
+                HStack(spacing: 12) {
+                    searchFieldGlassSurface
 
-            Color.clear
-                .frame(width: Self.searchCloseButtonSize, height: Self.searchCloseButtonSize)
-                .nativeCompactSearchActionGlass()
+                    Color.clear
+                        .frame(width: Self.searchCloseButtonSize, height: Self.searchCloseButtonSize)
+                        .nativeCompactSearchActionGlass()
+                }
+            } else {
+                searchFieldGlassSurface
+            }
         }
     }
 
     private var searchGlassRims: some View {
-        HStack(spacing: 12) {
-            Color.clear
-                .frame(height: Self.searchFieldHeight)
-                .frame(maxWidth: .infinity)
-                .nativeLiquidGlassRimBorder()
+        ZStack(alignment: .trailing) {
+            Group {
+                if viewModel.isSearchPresented {
+                    HStack(spacing: 12) {
+                        searchFieldGlassRim
 
-            Color.clear
-                .frame(width: Self.searchCloseButtonSize, height: Self.searchCloseButtonSize)
-                .nativeLiquidGlassRimBorder()
+                        Color.clear
+                            .frame(width: Self.searchCloseButtonSize, height: Self.searchCloseButtonSize)
+                    }
+                } else {
+                    searchFieldGlassRim
+                }
+            }
+
+            closeActionGlassRim
+                .opacity(viewModel.isSearchPresented ? 1 : 0)
+                .transaction { transaction in
+                    transaction.animation = nil
+                    transaction.disablesAnimations = true
+                }
         }
+    }
+
+    private var searchFieldGlassSurface: some View {
+        Color.clear
+            .frame(height: Self.searchFieldHeight)
+            .frame(maxWidth: .infinity)
+            .nativeSearchFieldGlass(fallbackSearchFillOpacity: searchFallbackFillOpacity)
+            .nativeSearchPillGlassTransition(in: searchTransitionNamespace)
+    }
+
+    private var searchFallbackFillOpacity: Double {
+        viewModel.isSearchPresented ? 1 : 0
+    }
+
+    private var searchFieldGlassRim: some View {
+        Color.clear
+            .frame(height: Self.searchFieldHeight)
+            .frame(maxWidth: .infinity)
+            .nativeLiquidGlassRimBorder()
+    }
+
+    private var closeActionGlassRim: some View {
+        Color.clear
+            .frame(width: Self.searchCloseButtonSize, height: Self.searchCloseButtonSize)
+            .nativeLiquidGlassRimBorder()
     }
 
     private var locationPillGlassSurface: some View {
@@ -184,12 +256,28 @@ struct ContentView: View {
         max(locationPillSize.height, 48)
     }
 
+    private func searchKeyboardOffset(bottomSafeAreaInset: CGFloat) -> CGFloat {
+        guard keyboardTransition.keyboardHeight > 0 else {
+            return 0
+        }
+
+        return max(0, keyboardTransition.keyboardHeight - bottomSafeAreaInset) + Self.searchKeyboardBarGap
+    }
+
+    private func searchContentBottomInset(keyboardOffset: CGFloat) -> CGFloat {
+        guard keyboardOffset > 0 else {
+            return 0
+        }
+
+        return keyboardOffset + Self.searchBarTopPadding + Self.searchFieldHeight
+    }
+
     @ViewBuilder
     private var locationButtonLayer: some View {
-        if viewModel.hasWeatherData && !viewModel.isSearchPresented {
+        if viewModel.hasWeatherData {
             Button {
                 AppHaptics.selection()
-                viewModel.presentSearch()
+                presentSearchFromLocation()
             } label: {
                 locationPillContent
                     .background {
@@ -206,6 +294,9 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.horizontal, 22)
             .padding(.bottom, 0)
+            .opacity(viewModel.isSearchPresented ? 0 : 1)
+            .allowsHitTesting(!viewModel.isSearchPresented)
+            .accessibilityHidden(viewModel.isSearchPresented)
             .transition(.identity)
         }
     }
@@ -224,6 +315,38 @@ struct ContentView: View {
         .frame(minHeight: 48)
     }
 
+    private func dismissSearchAfterKeyboard() {
+        commitSearchDismissalWithKeyboard {
+            viewModel.dismissSearch()
+        }
+    }
+
+    private func selectSearchCity(_ city: City) {
+        commitSearchDismissalWithKeyboard {
+            viewModel.selectCity(city)
+        }
+    }
+
+    private func presentSearchFromLocation() {
+        searchOverlayDismissTask?.cancel()
+        isSearchFieldFocused = true
+
+        withAnimation(searchPresentationAnimation) {
+            isSearchOverlayVisible = true
+            viewModel.presentSearch()
+        }
+    }
+
+    private func commitSearchDismissalWithKeyboard(_ commit: @escaping @MainActor () -> Void) {
+        isSearchFieldFocused = false
+
+        let animation = searchPresentationAnimation
+        withAnimation(animation) {
+            keyboardTransition.keyboardHeight = 0
+            commit()
+        }
+    }
+
     private func resolveSplash() async {
         try? await Task.sleep(for: .milliseconds(780))
         withAnimation(.easeOut(duration: 0.28)) {
@@ -232,6 +355,50 @@ struct ContentView: View {
         try? await Task.sleep(for: .milliseconds(240))
         withAnimation(.easeOut(duration: 0.28)) {
             isSplashVisible = false
+        }
+    }
+}
+
+private struct KeyboardTransition {
+    private static let searchChromeLead: TimeInterval = 0.06
+
+    var duration: TimeInterval = 0.28
+    var keyboardHeight: CGFloat = 0
+    var animation: Animation = .easeOut(duration: 0.22)
+
+    init() {}
+
+    init(notification: Notification) {
+        let rawDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
+        let duration = max(rawDuration ?? 0.28, 0.16)
+        let rawCurve = notification.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int
+        let curve = rawCurve.flatMap(UIView.AnimationCurve.init(rawValue:)) ?? .easeOut
+        let endFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect
+        let screenHeight = UIScreen.main.bounds.height
+        let keyboardHeight = endFrame.map { max(0, screenHeight - $0.minY) } ?? 0
+
+        self.duration = duration
+        self.keyboardHeight = keyboardHeight
+        self.animation = Self.animation(duration: max(duration - Self.searchChromeLead, 0.01), curve: curve)
+    }
+
+    var overlayRemovalDelay: Duration {
+        let milliseconds = Int64((duration * 1000).rounded()) + 80
+        return .milliseconds(milliseconds)
+    }
+
+    private static func animation(duration: TimeInterval, curve: UIView.AnimationCurve) -> Animation {
+        switch curve {
+        case .easeInOut:
+            return .easeInOut(duration: duration)
+        case .easeIn:
+            return .easeIn(duration: duration)
+        case .easeOut:
+            return .easeOut(duration: duration)
+        case .linear:
+            return .linear(duration: duration)
+        @unknown default:
+            return .easeOut(duration: duration)
         }
     }
 }

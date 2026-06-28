@@ -165,7 +165,7 @@ extension View {
     }
 
     @ViewBuilder
-    func nativeSearchFieldGlass() -> some View {
+    func nativeSearchFieldGlass(fallbackSearchFillOpacity: Double = 1) -> some View {
         if #available(iOS 26, *) {
             self
                 .glassEffect(.clear.interactive(), in: .capsule)
@@ -176,7 +176,11 @@ extension View {
                  */
         } else {
             self
-                .background(NativeSearchControlFallbackMaterialBackground())
+                .background {
+                    NativePillFallbackMaterialBackground()
+                    NativeSearchControlFallbackMaterialBackground()
+                        .opacity(fallbackSearchFillOpacity)
+                }
         }
     }
 
