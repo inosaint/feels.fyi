@@ -12,7 +12,13 @@ enum AppHaptics {
 
 struct WeatherSceneView: View {
     let viewModel: WeatherViewModel
+    let showsLocationButton: Bool
     @State private var hasDisplayedWeather = false
+
+    init(viewModel: WeatherViewModel, showsLocationButton: Bool = true) {
+        self.viewModel = viewModel
+        self.showsLocationButton = showsLocationButton
+    }
 
     private var snapshot: WeatherSnapshot? {
         viewModel.displayedSnapshot
@@ -51,13 +57,13 @@ struct WeatherSceneView: View {
             .animation(availabilityAnimation, value: hasWeatherData)
         }
         .overlay(alignment: .bottom) {
-            locationButton
-                .padding(.horizontal, 22)
-                .padding(.bottom, 0)
-                .opacity(hasWeatherData ? 1 : 0)
-                .allowsHitTesting(hasWeatherData)
-                .accessibilityHidden(!hasWeatherData)
-                .animation(hasDisplayedWeather ? .easeOut(duration: 0.32).delay(0.08) : nil, value: hasWeatherData)
+            if showsLocationButton && hasWeatherData && !viewModel.isSearchPresented {
+                locationButton
+                    .padding(.horizontal, 22)
+                    .padding(.bottom, 0)
+                    .transition(.identity)
+                    .animation(hasDisplayedWeather ? .easeOut(duration: 0.32).delay(0.08) : nil, value: hasWeatherData)
+            }
         }
         .animation(availabilityAnimation, value: hasWeatherData)
         .onChange(of: hasWeatherData) { _, hasWeatherData in
@@ -72,21 +78,46 @@ struct WeatherSceneView: View {
             AppHaptics.selection()
             viewModel.presentSearch()
         } label: {
-            HStack(spacing: 8) {
-                LocationPinIcon()
-                    .frame(width: 19, height: 19)
-
-                Text(viewModel.currentCity.displayName)
-                    .lineLimit(1)
-            }
-            .font(.body)
-            .foregroundStyle(WeatherPalette.ink)
-            .padding(.horizontal, 16)
-            .frame(minHeight: 48)
-            .locationPillGlass()
+            locationButtonLabel
         }
+        /*
+        .nativeLocationPillGlassButton()
+        .nativeSearchPillGlassTransition(in: searchTransitionNamespace)
+        */
+        .buttonStyle(.plain)
         .accessibilityHint("Opens location search")
         .frame(maxWidth: .infinity, alignment: .center)
+    }
+
+    private var locationButtonLabel: some View {
+        locationButtonContent
+        /*
+        ZStack {
+            locationButtonContent
+                .hidden()
+                .locationPillGlass()
+                .background {
+                    Color.clear
+                        .searchPillMatchedGeometry(in: searchTransitionNamespace)
+                }
+
+            locationButtonContent
+        }
+        */
+    }
+
+    private var locationButtonContent: some View {
+        HStack(spacing: 8) {
+            LocationPinIcon()
+                .frame(width: 19, height: 19)
+
+            Text(viewModel.currentCity.displayName)
+                .lineLimit(1)
+        }
+        .font(.body)
+        .foregroundStyle(WeatherPalette.ink)
+        .padding(.horizontal, 16)
+        .frame(minHeight: 48)
     }
 }
 
@@ -126,7 +157,7 @@ private struct WeatherStatusView: View {
     }
 }
 
-private struct LocationPinIcon: View {
+struct LocationPinIcon: View {
     var body: some View {
         ZStack {
             LocationPinShape()
@@ -140,7 +171,7 @@ private struct LocationPinIcon: View {
     }
 }
 
-private struct LocationPinShape: Shape {
+struct LocationPinShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         let width = rect.width
