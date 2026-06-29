@@ -15,7 +15,17 @@ struct ContentView: View {
     @State private var isSearchFieldFocused = false
     @State private var keyboardTransition = KeyboardTransition()
     @State private var searchOverlayDismissTask: Task<Void, Never>?
+    @State private var recentLocationsTask: Task<Void, Never>?
+    @State private var recentLocationChipTask: Task<Void, Never>?
+    @State private var isRecentLocationsRowVisible = false
+    @State private var visibleRecentLocationIDs = Set<String>()
+    @State private var recentLocationChipFrames: [String: CGRect] = [:]
+    @State private var searchResultRowTask: Task<Void, Never>?
+    @State private var visibleSearchResultIDs = Set<String>()
+    @State private var searchResultRowFrames: [String: CGRect] = [:]
+    @State private var searchResultViewportFrame: CGRect?
     @State private var locationPillSize: CGSize = .zero
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var searchTransitionNamespace
 
     private var searchPresentationAnimation: Animation {
@@ -36,6 +46,8 @@ struct ContentView: View {
             layeredContent(bottomSafeAreaInset: proxy.safeAreaInsets.bottom)
                 .frame(width: proxy.size.width, height: proxy.size.height)
         }
+            .coordinateSpace(name: RecentLocationChipCoordinateSpace.name)
+            .coordinateSpace(name: SearchResultRowCoordinateSpace.name)
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .animation(searchPresentationAnimation, value: viewModel.isSearchPresented)
             .onPreferenceChange(LocationPillSizePreferenceKey.self) { size in
@@ -45,6 +57,15 @@ struct ContentView: View {
 
                 locationPillSize = size
             }
+            .onPreferenceChange(RecentLocationChipFramePreferenceKey.self) { frames in
+                recentLocationChipFrames = frames
+            }
+            .onPreferenceChange(SearchResultRowFramePreferenceKey.self) { frames in
+                searchResultRowFrames = frames
+            }
+            .onPreferenceChange(SearchResultViewportFramePreferenceKey.self) { frame in
+                searchResultViewportFrame = frame
+            }
             .task {
                 async let initialize: Void = viewModel.initialize()
                 await resolveSplash()
@@ -52,6 +73,8 @@ struct ContentView: View {
             }
             .onAppear {
                 isSearchOverlayVisible = viewModel.isSearchPresented
+                syncRecentLocationsRowVisibility()
+                syncSearchResultRowVisibility()
             }
             .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { notification in
                 let nextTransition = KeyboardTransition(notification: notification)
@@ -67,7 +90,11 @@ struct ContentView: View {
                     withAnimation(searchPresentationAnimation) {
                         isSearchOverlayVisible = true
                     }
+                    syncRecentLocationsRowVisibility()
+                    syncSearchResultRowVisibility()
                 } else {
+                    hideRecentLocationsRow()
+                    hideSearchResultRows()
                     isSearchFieldFocused = false
                     let removalDelay = keyboardTransition.overlayRemovalDelay
                     searchOverlayDismissTask = Task { @MainActor in
@@ -81,6 +108,16 @@ struct ContentView: View {
                         }
                     }
                 }
+            }
+            .onChange(of: viewModel.searchQuery) { _, _ in
+                syncRecentLocationsRowVisibility()
+                syncSearchResultRowVisibility()
+            }
+            .onChange(of: viewModel.recentSearchedCities) { _, _ in
+                syncRecentLocationsRowVisibility()
+            }
+            .onChange(of: viewModel.searchResults) { _, _ in
+                syncSearchResultRowVisibility()
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel(viewModel.statusMessage)
@@ -100,6 +137,12 @@ struct ContentView: View {
                 .ignoresSafeArea(.keyboard, edges: .bottom)
                 .zIndex(0.5)
 
+            recentLocationChipGlassLayer
+                .zIndex(0.55)
+
+            searchResultRowGlassLayer
+                .zIndex(0.6)
+
             locationButtonLayer
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .ignoresSafeArea(.keyboard, edges: .bottom)
@@ -109,7 +152,6 @@ struct ContentView: View {
                 SearchView(
                     viewModel: viewModel,
                     bottomContentInset: searchContentBottomInset(keyboardOffset: keyboardOffset),
-                    selectCityAction: selectSearchCity,
                     dismissSearchAction: dismissSearchAfterKeyboard
                 )
                     .transition(.opacity)
@@ -123,6 +165,13 @@ struct ContentView: View {
                     shouldFocusSearchField: $isSearchFieldFocused,
                     keyboardOffset: keyboardOffset,
                     collapsedWidth: searchChromeCollapsedWidth,
+                    isRecentLocationsRowVisible: isRecentLocationsRowVisible,
+                    visibleRecentLocationIDs: visibleRecentLocationIDs,
+                    visibleSearchResultIDs: visibleSearchResultIDs,
+                    selectRecentCityAction: selectSearchCity,
+                    selectSearchResultAction: selectSearchCity,
+                    hideRecentLocationsAction: hideRecentLocationsRow,
+                    hideSearchResultsAction: hideSearchResultRows,
                     dismissSearchAction: dismissSearchAfterKeyboard
                 )
                     .allowsHitTesting(viewModel.isSearchPresented)
@@ -158,14 +207,43 @@ struct ContentView: View {
     }
 
     private var searchGlassBottomBar: some View {
-        ZStack {
-            searchGlassSurfaces
-                .nativeLiquidGlassContainer(spacing: 12)
+        VStack(alignment: .leading, spacing: 10) {
+            if isRecentLocationsRowVisible {
+                Color.clear
+                    .frame(height: RecentLocationChipMotion.rowHeight)
+                    .transition(.identity)
+            }
 
-            searchGlassRims
+            ZStack {
+                searchGlassSurfaces
+                    .nativeLiquidGlassContainer(spacing: 12)
+
+                searchGlassRims
+            }
         }
         .padding(.horizontal, Self.searchBarHorizontalPadding)
         .padding(.top, Self.searchBarTopPadding)
+    }
+
+    private var recentLocationChipGlassLayer: some View {
+        RecentLocationChipMeasuredGlassLayer(
+            cities: viewModel.recentSearchedCities,
+            visibleCityIDs: visibleRecentLocationIDs,
+            chipFrames: recentLocationChipFrames
+        )
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private var searchResultRowGlassLayer: some View {
+        SearchResultMeasuredGlassLayer(
+            cities: viewModel.searchResults,
+            visibleCityIDs: visibleSearchResultIDs,
+            rowFrames: searchResultRowFrames,
+            viewportFrame: searchResultViewportFrame
+        )
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 
     private var searchChromeWidth: CGFloat? {
@@ -322,6 +400,8 @@ struct ContentView: View {
     }
 
     private func selectSearchCity(_ city: City) {
+        hideRecentLocationsRow()
+        hideSearchResultRows()
         commitSearchDismissalWithKeyboard {
             viewModel.selectCity(city)
         }
@@ -344,6 +424,166 @@ struct ContentView: View {
         withAnimation(animation) {
             keyboardTransition.keyboardHeight = 0
             commit()
+        }
+    }
+
+    private var trimmedSearchQuery: String {
+        viewModel.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var shouldShowRecentLocations: Bool {
+        viewModel.isSearchPresented
+            && trimmedSearchQuery.isEmpty
+            && !viewModel.recentSearchedCities.isEmpty
+    }
+
+    private var shouldShowSearchResults: Bool {
+        viewModel.isSearchPresented
+            && trimmedSearchQuery.count >= 2
+            && !viewModel.searchResults.isEmpty
+    }
+
+    private var currentSearchResultIDs: [String] {
+        viewModel.searchResults.map(\.id)
+    }
+
+    private func syncRecentLocationsRowVisibility() {
+        if shouldShowRecentLocations {
+            scheduleRecentLocationsRow()
+        } else {
+            hideRecentLocationsRow()
+        }
+    }
+
+    private func scheduleRecentLocationsRow() {
+        if isRecentLocationsRowVisible {
+            revealRecentLocationChips()
+            return
+        }
+
+        recentLocationsTask?.cancel()
+        recentLocationsTask = Task { @MainActor in
+            try? await Task.sleep(for: RecentLocationChipMotion.rowDelay)
+            guard !Task.isCancelled, shouldShowRecentLocations else {
+                return
+            }
+
+            isRecentLocationsRowVisible = true
+            revealRecentLocationChips()
+        }
+    }
+
+    private func revealRecentLocationChips() {
+        recentLocationChipTask?.cancel()
+        recentLocationChipTask = Task { @MainActor in
+            visibleRecentLocationIDs = []
+
+            guard !viewModel.recentSearchedCities.isEmpty else {
+                return
+            }
+
+            if reduceMotion {
+                visibleRecentLocationIDs = Set(viewModel.recentSearchedCities.map(\.id))
+                return
+            }
+
+            try? await Task.sleep(for: RecentLocationChipMotion.firstChipDelay)
+            for city in viewModel.recentSearchedCities {
+                guard !Task.isCancelled, shouldShowRecentLocations else {
+                    return
+                }
+
+                visibleRecentLocationIDs.insert(city.id)
+                try? await Task.sleep(for: RecentLocationChipMotion.chipInterval)
+            }
+        }
+    }
+
+    private func hideRecentLocationsRow() {
+        recentLocationsTask?.cancel()
+        recentLocationChipTask?.cancel()
+        recentLocationsTask = nil
+        recentLocationChipTask = nil
+
+        guard isRecentLocationsRowVisible || !visibleRecentLocationIDs.isEmpty else {
+            return
+        }
+
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            isRecentLocationsRowVisible = false
+            visibleRecentLocationIDs = []
+            recentLocationChipFrames = [:]
+        }
+    }
+
+    private func syncSearchResultRowVisibility() {
+        if shouldShowSearchResults {
+            revealSearchResultRows()
+        } else {
+            hideSearchResultRows()
+        }
+    }
+
+    private func revealSearchResultRows() {
+        let cities = viewModel.searchResults
+        let cityIDs = cities.map(\.id)
+        let targetVisibleIDs = Set(cityIDs)
+
+        guard !cities.isEmpty else {
+            hideSearchResultRows()
+            return
+        }
+
+        if visibleSearchResultIDs == targetVisibleIDs && searchResultRowTask == nil {
+            return
+        }
+
+        searchResultRowTask?.cancel()
+        searchResultRowTask = Task { @MainActor in
+            visibleSearchResultIDs = []
+
+            guard shouldShowSearchResults, currentSearchResultIDs == cityIDs else {
+                return
+            }
+
+            if reduceMotion {
+                visibleSearchResultIDs = targetVisibleIDs
+                searchResultRowTask = nil
+                return
+            }
+
+            try? await Task.sleep(for: SearchResultRowMotion.firstRowDelay)
+            for city in cities {
+                guard !Task.isCancelled,
+                      shouldShowSearchResults,
+                      currentSearchResultIDs == cityIDs else {
+                    return
+                }
+
+                visibleSearchResultIDs.insert(city.id)
+                try? await Task.sleep(for: SearchResultRowMotion.rowInterval)
+            }
+
+            searchResultRowTask = nil
+        }
+    }
+
+    private func hideSearchResultRows() {
+        searchResultRowTask?.cancel()
+        searchResultRowTask = nil
+
+        guard !visibleSearchResultIDs.isEmpty || !searchResultRowFrames.isEmpty || searchResultViewportFrame != nil else {
+            return
+        }
+
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            visibleSearchResultIDs = []
+            searchResultRowFrames = [:]
+            searchResultViewportFrame = nil
         }
     }
 
@@ -452,4 +692,8 @@ private struct SplashView: View {
 
 #Preview("Unavailable") {
     ContentView(viewModel: .previewUnavailable)
+}
+
+#Preview("Search Results") {
+    ContentView(viewModel: .previewSearchResults)
 }

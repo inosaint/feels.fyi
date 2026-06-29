@@ -3,6 +3,7 @@ import SwiftUI
 struct WeatherReadoutView: View {
     let temperatureText: String
     let conditionText: String
+    private let temperatureVisualYOffset: CGFloat = 70
     @State private var temperatureWidth: CGFloat = 0
 
     var body: some View {
@@ -12,8 +13,8 @@ struct WeatherReadoutView: View {
 
                 ZStack(alignment: .topLeading) {
                     Text(temperatureText)
-                        .font(.custom("Caveat Brush", fixedSize: 252))
-                        .minimumScaleFactor(0.58)
+                        .font(.custom("Jua", fixedSize: 100))
+                        .minimumScaleFactor(0)
                         .lineLimit(1)
                         .background(
                             GeometryReader { textProxy in
@@ -21,10 +22,14 @@ struct WeatherReadoutView: View {
                                     .preference(key: TemperatureWidthKey.self, value: textProxy.size.width)
                             }
                         )
+                        .offset(y: temperatureVisualYOffset)
 
                     Text("°")
-                        .font(.custom("Caveat Brush", fixedSize: 42))
-                        .offset(x: min(max(0, temperatureWidth - 6), readoutWidth - 15), y: 38)
+                        .font(.custom("Jua", fixedSize: 42))
+                        .offset(
+                            x: min(max(0, temperatureWidth - 6), readoutWidth - 15),
+                            y: 72
+                        )
                 }
                 .frame(width: readoutWidth, height: 166, alignment: .topLeading)
             }

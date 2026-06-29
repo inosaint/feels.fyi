@@ -31,6 +31,14 @@ extension WeatherViewModel {
         preview(snapshot: WeatherSnapshot.longCity)
     }
 
+    static var previewSearchResults: WeatherViewModel {
+        let viewModel = preview(snapshot: WeatherSnapshot.clearMorning)
+        viewModel.isSearchPresented = true
+        viewModel.searchQuery = "ba"
+        viewModel.searchResults = PreviewSearchCityFixtures.cities
+        return viewModel
+    }
+
     private static func preview(snapshot: WeatherSnapshot) -> WeatherViewModel {
         WeatherViewModel(
             weatherFetcher: PreviewWeatherClient(result: .success(snapshot.weather)),
@@ -38,6 +46,23 @@ extension WeatherViewModel {
             persistence: PreviewWeatherStore(snapshot: snapshot),
             initialState: .loaded(snapshot)
         )
+    }
+}
+
+private enum PreviewSearchCityFixtures {
+    static var cities: [City] {
+        [
+            City(name: "Bengaluru", country: "India", latitude: 12.97194, longitude: 77.59369, population: 8495492, countryCode: "IN"),
+            City(name: "Bangkok", country: "Thailand", latitude: 13.75398, longitude: 100.50144, population: 5104476, countryCode: "TH"),
+            City(name: "Barcelona", country: "Spain", latitude: 41.38879, longitude: 2.15899, population: 1621537, countryCode: "ES"),
+            City(name: "Bali", country: "Indonesia", latitude: -8.40952, longitude: 115.18892, population: 4362000, countryCode: "ID"),
+            City(name: "Basel", country: "Switzerland", latitude: 47.55839, longitude: 7.57327, population: 164488, countryCode: "CH"),
+            City(name: "Baltimore", country: "United States", latitude: 39.29038, longitude: -76.61219, population: 576498, countryCode: "US"),
+            City(name: "Baku", country: "Azerbaijan", latitude: 40.37767, longitude: 49.89201, population: 1116513, countryCode: "AZ"),
+            City(name: "Bandung", country: "Indonesia", latitude: -6.92222, longitude: 107.60694, population: 1699719, countryCode: "ID"),
+            City(name: "Bari", country: "Italy", latitude: 41.11773, longitude: 16.85118, population: 277387, countryCode: "IT"),
+            City(name: "Barranquilla", country: "Colombia", latitude: 10.96854, longitude: -74.78132, population: 1380425, countryCode: "CO")
+        ]
     }
 }
 
@@ -101,10 +126,7 @@ private struct PreviewWeatherClient: WeatherFetching, CitySearching {
     }
 
     func searchCities(query: String) async throws -> [City] {
-        [
-            .defaultCity,
-            City(name: "Mumbai", country: "India", latitude: 19.0760, longitude: 72.8777)
-        ]
+        PreviewSearchCityFixtures.cities
     }
 }
 
@@ -120,6 +142,12 @@ private struct PreviewWeatherStore: WeatherPersisting {
     }
 
     func saveSelectedCity(_ city: City) {}
+
+    func loadRecentSearchedCities() -> [City] {
+        []
+    }
+
+    func saveRecentSearchedCities(_ cities: [City]) {}
 
     func loadSnapshot() -> WeatherSnapshot? {
         snapshot

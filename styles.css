@@ -89,7 +89,7 @@ body.weather-storm {
 
 .temperature {
   margin: 0;
-  font-family: "Caveat Brush", cursive;
+  font-family: "Jua", sans-serif;
   font-size: clamp(6.8rem, 35vw, 10.5rem);
   font-weight: 400;
   line-height: 0.75;
@@ -98,7 +98,7 @@ body.weather-storm {
 
 .degree {
   display: inline-block;
-  font-family: "Caveat Brush", cursive;
+  font-family: "Jua", sans-serif;
   font-size: 32%;
   font-weight: 400;
   line-height: 1;
