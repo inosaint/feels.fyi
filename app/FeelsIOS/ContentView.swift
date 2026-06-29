@@ -23,7 +23,7 @@ struct ContentView: View {
     @State private var searchResultRowTask: Task<Void, Never>?
     @State private var visibleSearchResultIDs = Set<String>()
     @State private var searchResultRowFrames: [String: CGRect] = [:]
-    @State private var searchResultViewportFrame: CGRect?
+    @State private var searchResultViewportMaskFrame: SearchResultViewportMaskFrame?
     @State private var locationPillSize: CGSize = .zero
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var searchTransitionNamespace
@@ -63,8 +63,8 @@ struct ContentView: View {
             .onPreferenceChange(SearchResultRowFramePreferenceKey.self) { frames in
                 searchResultRowFrames = frames
             }
-            .onPreferenceChange(SearchResultViewportFramePreferenceKey.self) { frame in
-                searchResultViewportFrame = frame
+            .onPreferenceChange(SearchResultViewportFramePreferenceKey.self) { maskFrame in
+                searchResultViewportMaskFrame = maskFrame
             }
             .task {
                 async let initialize: Void = viewModel.initialize()
@@ -141,7 +141,7 @@ struct ContentView: View {
                 .zIndex(0.55)
 
             searchResultRowGlassLayer
-                .zIndex(0.6)
+                .zIndex(0.45)
 
             locationButtonLayer
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -240,7 +240,7 @@ struct ContentView: View {
             cities: viewModel.searchResults,
             visibleCityIDs: visibleSearchResultIDs,
             rowFrames: searchResultRowFrames,
-            viewportFrame: searchResultViewportFrame
+            viewportMaskFrame: searchResultViewportMaskFrame
         )
         .allowsHitTesting(false)
         .accessibilityHidden(true)
@@ -574,7 +574,7 @@ struct ContentView: View {
         searchResultRowTask?.cancel()
         searchResultRowTask = nil
 
-        guard !visibleSearchResultIDs.isEmpty || !searchResultRowFrames.isEmpty || searchResultViewportFrame != nil else {
+        guard !visibleSearchResultIDs.isEmpty || !searchResultRowFrames.isEmpty || searchResultViewportMaskFrame != nil else {
             return
         }
 
@@ -583,7 +583,7 @@ struct ContentView: View {
         withTransaction(transaction) {
             visibleSearchResultIDs = []
             searchResultRowFrames = [:]
-            searchResultViewportFrame = nil
+            searchResultViewportMaskFrame = nil
         }
     }
 

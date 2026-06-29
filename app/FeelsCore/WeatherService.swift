@@ -73,7 +73,7 @@ struct WeatherService: WeatherFetching, CitySearching {
         var components = URLComponents(string: "https://geocoding-api.open-meteo.com/v1/search")
         components?.queryItems = [
             URLQueryItem(name: "name", value: query),
-            URLQueryItem(name: "count", value: "10"),
+            URLQueryItem(name: "count", value: "20"),
             URLQueryItem(name: "language", value: "en"),
             URLQueryItem(name: "format", value: "json")
         ]

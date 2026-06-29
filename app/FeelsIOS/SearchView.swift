@@ -254,21 +254,26 @@ struct SearchBottomBarView: View {
     private static let topPadding: CGFloat = 8
     private static let searchFieldHeight: CGFloat = 48
     private static let supplementalRowSpacing: CGFloat = 10
-    private static let statusBarClearance: CGFloat = 4
+    private static let topUnsafeClearance: CGFloat = 0
+    private static let visibleSearchResultRows = 6
 
     var body: some View {
         GeometryReader { proxy in
+            let topSafeAreaInset = proxy.safeAreaInsets.top
+
             searchBottomBar(
                 searchResultMaxHeight: searchResultMaxHeight(
                     availableHeight: proxy.size.height,
-                    topSafeAreaInset: proxy.safeAreaInsets.top
-                )
+                    topSafeAreaInset: topSafeAreaInset
+                ),
+                topSafeAreaInset: topSafeAreaInset
             )
                 .frame(width: searchChromeWidth)
                 .padding(.bottom, keyboardOffset)
                 .frame(width: proxy.size.width, height: proxy.size.height, alignment: .bottom)
         }
             .ignoresSafeArea(.keyboard, edges: .bottom)
+            .ignoresSafeArea(.container, edges: .top)
             .animation(searchFieldContentAnimation, value: viewModel.isSearchPresented)
         .onAppear {
             scheduleSearchFocus()
@@ -295,7 +300,10 @@ struct SearchBottomBarView: View {
         }
     }
 
-    private func searchBottomBar(searchResultMaxHeight: CGFloat) -> some View {
+    private func searchBottomBar(
+        searchResultMaxHeight: CGFloat,
+        topSafeAreaInset: CGFloat
+    ) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             if isRecentLocationsRowVisible {
                 RecentLocationChipRow(
@@ -311,6 +319,7 @@ struct SearchBottomBarView: View {
                     cities: viewModel.searchResults,
                     visibleCityIDs: visibleSearchResultIDs,
                     maxHeight: searchResultMaxHeight,
+                    topSafeAreaInset: topSafeAreaInset,
                     selectCity: selectSearchResult(_:)
                 )
                 .transition(.identity)
@@ -348,11 +357,13 @@ struct SearchBottomBarView: View {
             + Self.searchFieldHeight
             + Self.supplementalRowSpacing
             + topSafeAreaInset
-            + Self.statusBarClearance
+            + Self.topUnsafeClearance
         let availableResultHeight = max(0, availableHeight - reservedHeight)
-        let contentHeight = SearchResultRowMotion.stackHeight(for: viewModel.searchResults.count)
+        let visibleResultHeight = SearchResultRowMotion.stackHeight(
+            for: min(viewModel.searchResults.count, Self.visibleSearchResultRows)
+        )
 
-        return min(contentHeight, availableResultHeight)
+        return min(visibleResultHeight, availableResultHeight)
     }
 
     private var searchFieldControls: some View {
@@ -508,6 +519,7 @@ struct SearchBottomBarView: View {
 }
 
 private struct SearchPopButton<Label: View>: View {
+    let haptic: (() -> Void)?
     let action: () -> Void
     @ViewBuilder let label: () -> Label
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -542,7 +554,7 @@ private struct SearchPopButton<Label: View>: View {
     }
 
     private func triggerPop() {
-        AppHaptics.selection()
+        haptic?()
 
         guard !reduceMotion else {
             action()
@@ -606,11 +618,22 @@ private struct SearchResultStack: View {
     let cities: [City]
     let visibleCityIDs: Set<String>
     let maxHeight: CGFloat
+    let topSafeAreaInset: CGFloat
     let selectCity: (City) -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var displayedCities: [(index: Int, city: City)] {
         Array(cities.enumerated()).reversed().map { (index: $0.offset, city: $0.element) }
+    }
+
+    private var contentHeight: CGFloat {
+        SearchResultRowMotion.stackHeight(for: cities.count)
+    }
+
+    private var topFadeHeight: CGFloat {
+        contentHeight > maxHeight + 0.5
+            ? SearchResultRowMotion.topFadeHeight(for: topSafeAreaInset)
+            : 0
     }
 
     var body: some View {
@@ -645,26 +668,27 @@ private struct SearchResultStack: View {
                 }
             }
             .padding(.vertical, SearchResultRowMotion.viewportPadding)
-            .frame(maxWidth: .infinity, minHeight: maxHeight, alignment: .bottom)
+            .frame(maxWidth: .infinity, minHeight: maxHeight, alignment: .top)
         }
+        .scrollClipDisabled()
+        .defaultScrollAnchor(.bottom)
         .frame(height: maxHeight)
+        .mask {
+            SearchResultTopFadeMask(topFadeHeight: topFadeHeight)
+        }
         .background {
             GeometryReader { proxy in
                 let frame = proxy.frame(in: .named(SearchResultRowCoordinateSpace.name))
-                let bleed = SearchResultRowMotion.viewportClipBleed
 
                 Color.clear.preference(
                     key: SearchResultViewportFramePreferenceKey.self,
-                    value: CGRect(
-                        x: frame.minX,
-                        y: max(0, frame.minY - bleed),
-                        width: frame.width,
-                        height: frame.height + bleed * 2
+                    value: SearchResultViewportMaskFrame(
+                        frame: frame,
+                        topFadeHeight: topFadeHeight
                     )
                 )
             }
         }
-        .defaultScrollAnchor(.bottom)
     }
 }
 
@@ -676,7 +700,7 @@ private struct SearchResultRow: View {
     let selectCity: (City) -> Void
 
     var body: some View {
-        SearchPopButton {
+        SearchPopButton(haptic: AppHaptics.selection) {
             selectCity(city)
         } label: {
             SearchResultRowContent(city: city)
@@ -691,7 +715,7 @@ struct SearchResultMeasuredGlassLayer: View {
     let cities: [City]
     let visibleCityIDs: Set<String>
     let rowFrames: [String: CGRect]
-    let viewportFrame: CGRect?
+    let viewportMaskFrame: SearchResultViewportMaskFrame?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -700,13 +724,12 @@ struct SearchResultMeasuredGlassLayer: View {
                 ForEach(Array(cities.enumerated()), id: \.element.id) { index, city in
                     let isVisible = visibleCityIDs.contains(city.id)
 
-                    if let frame = rowFrames[city.id] {
+                    if isVisible, let frame = rowFrames[city.id] {
                         SearchResultRowGlassSurface()
                             .frame(width: frame.width, height: frame.height)
                             .position(x: frame.midX, y: frame.midY)
-                            .scaleEffect(SearchResultRowMotion.scale(isVisible: isVisible, reduceMotion: reduceMotion), anchor: .bottom)
-                            .opacity(isVisible ? 1 : 0)
-                            .offset(y: SearchResultRowMotion.offset(isVisible: isVisible, reduceMotion: reduceMotion))
+                            .scaleEffect(SearchResultRowMotion.scale(isVisible: true, reduceMotion: reduceMotion), anchor: .bottom)
+                            .offset(y: SearchResultRowMotion.offset(isVisible: true, reduceMotion: reduceMotion))
                             .animation(SearchResultRowMotion.animation(for: index, reduceMotion: reduceMotion), value: isVisible)
                     }
                 }
@@ -714,10 +737,16 @@ struct SearchResultMeasuredGlassLayer: View {
             .nativeLiquidGlassContainer(spacing: SearchResultRowMotion.rowSpacing)
             .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
             .mask(alignment: .topLeading) {
-                if let viewportFrame {
-                    Rectangle()
-                        .frame(width: viewportFrame.width, height: viewportFrame.height)
-                        .position(x: viewportFrame.midX, y: viewportFrame.midY)
+                if let viewportMaskFrame {
+                    SearchResultTopFadeMask(topFadeHeight: viewportMaskFrame.topFadeHeight)
+                        .frame(
+                            width: viewportMaskFrame.frame.width,
+                            height: viewportMaskFrame.frame.height
+                        )
+                        .position(
+                            x: viewportMaskFrame.frame.midX,
+                            y: viewportMaskFrame.frame.midY
+                        )
                 }
             }
         }
@@ -738,7 +767,9 @@ enum SearchResultRowMotion {
     static let rowHeight: CGFloat = 58
     static let rowSpacing: CGFloat = 8
     static let viewportPadding: CGFloat = 14
-    static let viewportClipBleed: CGFloat = 18
+    static let minimumTopFadeHeight: CGFloat = 10
+    static let maximumTopFadeHeight: CGFloat = 16
+    static let topFadeStartOpacity: Double = 0.18
     private static let hiddenYOffset: CGFloat = 10
 
     static func stackHeight(for rowCount: Int) -> CGFloat {
@@ -749,6 +780,10 @@ enum SearchResultRowMotion {
         return CGFloat(rowCount) * rowHeight
             + CGFloat(rowCount - 1) * rowSpacing
             + viewportPadding * 2
+    }
+
+    static func topFadeHeight(for topSafeAreaInset: CGFloat) -> CGFloat {
+        min(maximumTopFadeHeight, max(minimumTopFadeHeight, topSafeAreaInset * 0.25))
     }
 
     static func scale(isVisible: Bool, reduceMotion: Bool) -> CGFloat {
@@ -773,6 +808,11 @@ enum SearchResultRowCoordinateSpace {
     static let name = "search-result-row-space"
 }
 
+struct SearchResultViewportMaskFrame: Equatable {
+    let frame: CGRect
+    let topFadeHeight: CGFloat
+}
+
 struct SearchResultRowFramePreferenceKey: PreferenceKey {
     static var defaultValue: [String: CGRect] = [:]
 
@@ -782,10 +822,44 @@ struct SearchResultRowFramePreferenceKey: PreferenceKey {
 }
 
 struct SearchResultViewportFramePreferenceKey: PreferenceKey {
-    static var defaultValue: CGRect? = nil
+    static var defaultValue: SearchResultViewportMaskFrame? = nil
 
-    static func reduce(value: inout CGRect?, nextValue: () -> CGRect?) {
+    static func reduce(value: inout SearchResultViewportMaskFrame?, nextValue: () -> SearchResultViewportMaskFrame?) {
         value = nextValue() ?? value
+    }
+}
+
+private struct SearchResultTopFadeMask: View {
+    let topFadeHeight: CGFloat
+
+    var body: some View {
+        GeometryReader { proxy in
+            let fadeHeight = min(max(0, topFadeHeight), proxy.size.height)
+
+            if fadeHeight > 0 {
+                VStack(spacing: 0) {
+                    LinearGradient(
+                        stops: [
+                            Gradient.Stop(color: .white.opacity(SearchResultRowMotion.topFadeStartOpacity), location: 0),
+                            Gradient.Stop(color: .white, location: 1)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: fadeHeight)
+
+                    Rectangle()
+                        .fill(.white)
+                       
+                }
+                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .top)
+            } else {
+                Rectangle()
+                    .fill(.white)
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                    
+            }
+        }
     }
 }
 
@@ -869,7 +943,7 @@ private struct RecentLocationChip: View {
     let selectCity: (City) -> Void
 
     var body: some View {
-        SearchPopButton {
+        SearchPopButton(haptic: AppHaptics.selection) {
             selectCity(city)
         } label: {
             RecentLocationChipContent(city: city)

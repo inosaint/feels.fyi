@@ -4,7 +4,7 @@ import Observation
 @MainActor
 @Observable
 final class WeatherViewModel {
-    private static let searchResultsLimit = 10
+    private static let searchResultsLimit = 6
     private static let recentSearchedCitiesLimit = 3
 
     enum LoadState: Equatable {
