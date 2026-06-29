@@ -31,6 +31,18 @@ final class WeatherLogicTests: XCTestCase {
         )
     }
 
+    func testTemperatureTextUsesLocaleMeasurementSystem() {
+        let snapshot = WeatherSnapshot.fixture(
+            city: .defaultCity,
+            weatherCode: 0,
+            temperature: 25
+        )
+
+        XCTAssertEqual(snapshot.temperatureText(locale: Locale(identifier: "en_US")), "77")
+        XCTAssertEqual(snapshot.temperatureText(locale: Locale(identifier: "en_IN")), "25")
+        XCTAssertEqual(snapshot.temperatureText(locale: Locale(identifier: "en_GB")), "25")
+    }
+
     func testPrecipitationCodesUseMappedVisuals() {
         XCTAssertEqual(
             WeatherRules.visual(TestWeather.current(weatherCode: 51, temperature: 22)),
@@ -90,9 +102,9 @@ final class WeatherLogicTests: XCTestCase {
     func testMistyVisualAppliesBeforeCloudyVisual() {
         let weather = TestWeather.current(
             weatherCode: 3,
+            windSpeed: 6,
             relativeHumidity: 91,
-            cloudCover: 94,
-            windSpeed: 6
+            cloudCover: 94
         )
 
         XCTAssertEqual(WeatherRules.conditionLabel(weather), "Misty")
@@ -173,7 +185,7 @@ final class WeatherLogicTests: XCTestCase {
     func testFetchWeatherDecodesCurrentForecast() async throws {
         let service = makeService { request in
             XCTAssertEqual(request.url?.host, "api.open-meteo.com")
-            return httpResponse(
+            return self.httpResponse(
                 url: request.url,
                 statusCode: 200,
                 body: """
@@ -201,7 +213,7 @@ final class WeatherLogicTests: XCTestCase {
 
     func testFetchWeatherRejectsInvalidHTTPAndMalformedJSON() async throws {
         let failingService = makeService { request in
-            httpResponse(url: request.url, statusCode: 500, body: "{}")
+            self.httpResponse(url: request.url, statusCode: 500, body: "{}")
         }
 
         await XCTAssertThrowsErrorAsync {
@@ -209,7 +221,7 @@ final class WeatherLogicTests: XCTestCase {
         }
 
         let malformedService = makeService { request in
-            httpResponse(url: request.url, statusCode: 200, body: "{")
+            self.httpResponse(url: request.url, statusCode: 200, body: "{")
         }
 
         await XCTAssertThrowsErrorAsync {
@@ -219,14 +231,14 @@ final class WeatherLogicTests: XCTestCase {
 
     func testSearchCitiesDecodesEmptyAndDeduplicatedResults() async throws {
         let emptyService = makeService { request in
-            httpResponse(url: request.url, statusCode: 200, body: "{}")
+            self.httpResponse(url: request.url, statusCode: 200, body: "{}")
         }
 
         let emptyResults = try await emptyService.searchCities(query: "zz")
         XCTAssertTrue(emptyResults.isEmpty)
 
         let duplicateService = makeService { request in
-            httpResponse(
+            self.httpResponse(
                 url: request.url,
                 statusCode: 200,
                 body: """
@@ -243,6 +255,32 @@ final class WeatherLogicTests: XCTestCase {
         let results = try await duplicateService.searchCities(query: "Bengaluru")
         XCTAssertEqual(results.count, 1)
         XCTAssertEqual(results.first?.name, "Bengaluru")
+    }
+
+    func testRecentSearchedCitiesPersistenceStoresOnlyCityMetadata() {
+        let suiteName = "FeelsRecentSearchedCitiesTests-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+        }
+
+        let store = UserDefaultsWeatherStore(userDefaults: defaults)
+        let cities = [
+            City(
+                name: "Bengaluru",
+                country: "India",
+                latitude: 12.97194,
+                longitude: 77.59369,
+                population: 8495492,
+                countryCode: "IN"
+            )
+        ]
+
+        store.saveRecentSearchedCities(cities)
+
+        XCTAssertEqual(store.loadRecentSearchedCities(), cities)
+        XCTAssertNil(store.loadSnapshot())
     }
 
     @MainActor
@@ -264,15 +302,19 @@ final class WeatherLogicTests: XCTestCase {
             return XCTFail("Expected loaded state, got \(viewModel.state)")
         }
         XCTAssertEqual(snapshot.city, .defaultCity)
-        XCTAssertEqual(snapshot.temperatureText, "31")
+        XCTAssertEqual(snapshot.temperatureText(locale: Locale(identifier: "en_IN")), "31")
         XCTAssertEqual(store.snapshot, snapshot)
         XCTAssertEqual(fetcher.requestedCities, [.defaultCity])
     }
 
     @MainActor
-    func testLaunchFailureKeepsCachedWeatherStale() async {
-        let cached = WeatherSnapshot.fixture(city: .defaultCity, weatherCode: 1, temperature: 29)
-        let store = InMemoryWeatherStore(snapshot: cached, selectedCity: .defaultCity)
+    func testLaunchFailureKeepsCachedCurrentLocationWeatherStale() async {
+        let cached = WeatherSnapshot.fixture(
+            city: City(name: "Current location", country: "", latitude: 12.90, longitude: 77.50),
+            weatherCode: 1,
+            temperature: 29
+        )
+        let store = InMemoryWeatherStore(snapshot: cached)
         let viewModel = WeatherViewModel(
             weatherFetcher: MockWeatherFetcher(result: .failure(MockError.failure)),
             citySearcher: MockCitySearcher(),
@@ -292,7 +334,7 @@ final class WeatherLogicTests: XCTestCase {
     }
 
     @MainActor
-    func testPermissionDeniedFallsBackToSelectedCity() async {
+    func testPermissionDeniedFallsBackToDefaultCity() async {
         let selectedCity = City(name: "Mumbai", country: "India", latitude: 19.0760, longitude: 72.8777)
         let fetcher = MockWeatherFetcher(result: .success(TestWeather.current(weatherCode: 2, temperature: 27)))
         let store = InMemoryWeatherStore(selectedCity: selectedCity)
@@ -306,8 +348,30 @@ final class WeatherLogicTests: XCTestCase {
 
         await viewModel.initialize()
 
-        XCTAssertEqual(fetcher.requestedCities, [selectedCity])
-        XCTAssertEqual(viewModel.currentCity, selectedCity)
+        XCTAssertEqual(fetcher.requestedCities, [.defaultCity])
+        XCTAssertEqual(viewModel.currentCity, .defaultCity)
+        XCTAssertEqual(store.selectedCity, selectedCity)
+    }
+
+    @MainActor
+    func testPermissionDeniedIgnoresCachedSelectedCitySnapshot() async {
+        let selectedCity = City(name: "Mumbai", country: "India", latitude: 19.0760, longitude: 72.8777)
+        let cached = WeatherSnapshot.fixture(city: selectedCity, weatherCode: 63, temperature: 27)
+        let fetcher = MockWeatherFetcher(result: .success(TestWeather.current(weatherCode: 2, temperature: 24)))
+        let store = InMemoryWeatherStore(snapshot: cached, selectedCity: selectedCity)
+        let viewModel = WeatherViewModel(
+            weatherFetcher: fetcher,
+            citySearcher: MockCitySearcher(),
+            locationProvider: MockLocationProvider(coordinates: nil),
+            persistence: store,
+            searchDebounce: .zero
+        )
+
+        await viewModel.initialize()
+
+        XCTAssertEqual(fetcher.requestedCities, [.defaultCity])
+        XCTAssertEqual(viewModel.currentCity, .defaultCity)
+        XCTAssertEqual(store.snapshot?.city, .defaultCity)
     }
 
     @MainActor
@@ -328,6 +392,75 @@ final class WeatherLogicTests: XCTestCase {
         XCTAssertEqual(viewModel.currentCity.name, "Current location")
         XCTAssertEqual(store.selectedCity, selectedCity)
         XCTAssertEqual(store.snapshot?.city.name, "Current location")
+        XCTAssertTrue(viewModel.recentSearchedCities.isEmpty)
+        XCTAssertTrue(store.recentSearchedCities.isEmpty)
+    }
+
+    @MainActor
+    func testSuccessfulSelectedCityFetchAddsRecentSearch() async {
+        let city = City(
+            name: "Bengaluru",
+            country: "India",
+            latitude: 12.97194,
+            longitude: 77.59369,
+            population: 8495492,
+            countryCode: "IN"
+        )
+        let store = InMemoryWeatherStore()
+        let viewModel = WeatherViewModel(
+            weatherFetcher: MockWeatherFetcher(result: .success(TestWeather.current())),
+            citySearcher: MockCitySearcher(),
+            persistence: store,
+            searchDebounce: .zero
+        )
+
+        await viewModel.loadCity(city, shouldSaveRecentSearch: true)
+
+        XCTAssertEqual(viewModel.recentSearchedCities, [city])
+        XCTAssertEqual(store.recentSearchedCities, [city])
+        XCTAssertNil(store.selectedCity)
+    }
+
+    @MainActor
+    func testFailedSelectedCityFetchDoesNotAddRecentSearch() async {
+        let city = City(name: "Kolkata", country: "India", latitude: 22.5726, longitude: 88.3639)
+        let store = InMemoryWeatherStore()
+        let viewModel = WeatherViewModel(
+            weatherFetcher: MockWeatherFetcher(result: .failure(MockError.failure)),
+            citySearcher: MockCitySearcher(),
+            persistence: store,
+            searchDebounce: .zero
+        )
+
+        await viewModel.loadCity(city, shouldSaveRecentSearch: true)
+
+        XCTAssertTrue(viewModel.recentSearchedCities.isEmpty)
+        XCTAssertTrue(store.recentSearchedCities.isEmpty)
+    }
+
+    @MainActor
+    func testRecentSearchesMoveDuplicatesToFrontAndCapAtThree() async {
+        let cities = [
+            City(name: "Bengaluru", country: "India", latitude: 12.97194, longitude: 77.59369, countryCode: "IN"),
+            City(name: "Mumbai", country: "India", latitude: 19.0760, longitude: 72.8777, countryCode: "IN"),
+            City(name: "Kolkata", country: "India", latitude: 22.5726, longitude: 88.3639, countryCode: "IN"),
+            City(name: "Chennai", country: "India", latitude: 13.0827, longitude: 80.2707, countryCode: "IN")
+        ]
+        let store = InMemoryWeatherStore()
+        let viewModel = WeatherViewModel(
+            weatherFetcher: MockWeatherFetcher(result: .success(TestWeather.current())),
+            citySearcher: MockCitySearcher(),
+            persistence: store,
+            searchDebounce: .zero
+        )
+
+        for city in cities {
+            await viewModel.loadCity(city, shouldSaveRecentSearch: true)
+        }
+        await viewModel.loadCity(cities[1], shouldSaveRecentSearch: true)
+
+        XCTAssertEqual(viewModel.recentSearchedCities, [cities[1], cities[3], cities[2]])
+        XCTAssertEqual(store.recentSearchedCities, [cities[1], cities[3], cities[2]])
     }
 
     @MainActor
@@ -344,7 +477,7 @@ final class WeatherLogicTests: XCTestCase {
 
         await viewModel.loadCity(city)
         XCTAssertEqual(viewModel.currentCity, city)
-        XCTAssertEqual(store.selectedCity, city)
+        XCTAssertNil(store.selectedCity)
         XCTAssertEqual(viewModel.currentVisual, .drizzle)
 
         fetcher.result = .failure(MockError.failure)
@@ -369,8 +502,13 @@ final class WeatherLogicTests: XCTestCase {
         )
 
         viewModel.updateSearchQuery("mu")
-        await Task.yield()
-        await Task.yield()
+        for _ in 0..<10 {
+            if !searcher.queries.isEmpty {
+                break
+            }
+
+            try? await Task.sleep(for: .milliseconds(10))
+        }
 
         XCTAssertEqual(viewModel.searchResults.first?.name, "Mumbai")
         XCTAssertEqual(searcher.queries, ["mu"])
@@ -386,6 +524,39 @@ final class WeatherLogicTests: XCTestCase {
 
         XCTAssertTrue(slowViewModel.searchResults.isEmpty)
         XCTAssertFalse(slowViewModel.isSearching)
+    }
+
+    @MainActor
+    func testSearchResultsAreCappedAtTen() async {
+        let cities = (0..<12).map { index in
+            City(
+                name: "Ba City \(index)",
+                country: "India",
+                latitude: 10 + Double(index),
+                longitude: 70 + Double(index),
+                population: 100_000 + index,
+                countryCode: "IN"
+            )
+        }
+        let searcher = MockCitySearcher(results: cities)
+        let viewModel = WeatherViewModel(
+            weatherFetcher: MockWeatherFetcher(result: .success(TestWeather.current())),
+            citySearcher: searcher,
+            persistence: InMemoryWeatherStore(),
+            searchDebounce: .zero
+        )
+
+        viewModel.updateSearchQuery("ba")
+        for _ in 0..<20 {
+            if !viewModel.isSearching && !searcher.queries.isEmpty {
+                break
+            }
+
+            try? await Task.sleep(for: .milliseconds(10))
+        }
+
+        XCTAssertEqual(searcher.queries, ["ba"])
+        XCTAssertEqual(viewModel.searchResults.count, 10)
     }
 
     private func makeService(
@@ -487,10 +658,16 @@ private struct MockLocationProvider: LocationProviding {
 private final class InMemoryWeatherStore: WeatherPersisting {
     var snapshot: WeatherSnapshot?
     var selectedCity: City?
+    var recentSearchedCities: [City]
 
-    init(snapshot: WeatherSnapshot? = nil, selectedCity: City? = nil) {
+    init(
+        snapshot: WeatherSnapshot? = nil,
+        selectedCity: City? = nil,
+        recentSearchedCities: [City] = []
+    ) {
         self.snapshot = snapshot
         self.selectedCity = selectedCity
+        self.recentSearchedCities = recentSearchedCities
     }
 
     func loadSelectedCity() -> City? {
@@ -499,6 +676,14 @@ private final class InMemoryWeatherStore: WeatherPersisting {
 
     func saveSelectedCity(_ city: City) {
         selectedCity = city
+    }
+
+    func loadRecentSearchedCities() -> [City] {
+        recentSearchedCities
+    }
+
+    func saveRecentSearchedCities(_ cities: [City]) {
+        recentSearchedCities = cities
     }
 
     func loadSnapshot() -> WeatherSnapshot? {

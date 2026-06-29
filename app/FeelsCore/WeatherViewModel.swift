@@ -4,6 +4,9 @@ import Observation
 @MainActor
 @Observable
 final class WeatherViewModel {
+    private static let searchResultsLimit = 10
+    private static let recentSearchedCitiesLimit = 3
+
     enum LoadState: Equatable {
         case idle
         case loading(previous: WeatherSnapshot?)
@@ -51,6 +54,7 @@ final class WeatherViewModel {
     var state: LoadState
     var searchQuery = ""
     var searchResults: [City] = []
+    var recentSearchedCities: [City] = []
     var isSearchPresented = false
     var isSearching = false
     var searchMessage = ""
@@ -84,12 +88,16 @@ final class WeatherViewModel {
         self.searchDebounce = searchDebounce
 
         let cachedSnapshot = persistence.loadSnapshot()
-        self.selectedCity = persistence.loadSelectedCity() ?? cachedSnapshot?.city ?? .defaultCity
-        self.restoredVisual = cachedSnapshot?.visual
+        let cachedCurrentLocationState = cachedSnapshot.flatMap(Self.currentLocationState)
+        self.selectedCity = .defaultCity
+        self.restoredVisual = cachedCurrentLocationState?.snapshot?.visual
             ?? (persistence as? UserDefaultsWeatherStore)?.loadLegacyVisual()
             ?? .clearMorning
-        self.state = initialState ?? cachedSnapshot.map { .staleLoaded($0, message: "Updating weather") } ?? .idle
+        self.state = initialState ?? cachedCurrentLocationState ?? .idle
         self.searchQuery = selectedCity.name
+        self.recentSearchedCities = Self.normalizedRecentSearchedCities(
+            persistence.loadRecentSearchedCities()
+        )
         self.statusMessage = state.snapshot?.city.displayName ?? "Allow location"
     }
 
@@ -142,11 +150,10 @@ final class WeatherViewModel {
                     country: "",
                     latitude: coordinates.latitude,
                     longitude: coordinates.longitude
-                ),
-                shouldPersistCity: false
+                )
             )
         } else {
-            await loadWeather(for: selectedCity)
+            await loadWeather(for: .defaultCity)
         }
     }
 
@@ -216,13 +223,13 @@ final class WeatherViewModel {
         dismissSearch()
         weatherTask?.cancel()
         weatherTask = Task {
-            await loadCity(city)
+            await loadCity(city, shouldSaveRecentSearch: true)
         }
     }
 
-    func loadCity(_ city: City) async {
+    func loadCity(_ city: City, shouldSaveRecentSearch: Bool = false) async {
         dismissSearch()
-        await loadWeather(for: city)
+        await loadWeather(for: city, shouldSaveRecentSearch: shouldSaveRecentSearch)
     }
 
     private func performSearch(query: String) async {
@@ -249,7 +256,7 @@ final class WeatherViewModel {
                     cities,
                     query: trimmedQuery,
                     userCoordinates: userCoordinates
-                ).prefix(5)
+                ).prefix(Self.searchResultsLimit)
             )
             isSearching = false
             searchMessage = searchResults.isEmpty ? "No results" : ""
@@ -268,7 +275,10 @@ final class WeatherViewModel {
         }
     }
 
-    private func loadWeather(for city: City, shouldPersistCity: Bool = true) async {
+    private func loadWeather(
+        for city: City,
+        shouldSaveRecentSearch: Bool = false
+    ) async {
         loadSequence += 1
         let loadToken = loadSequence
         let previousSnapshot = state.snapshot
@@ -294,8 +304,8 @@ final class WeatherViewModel {
             statusMessage = city.displayName
 
             persistence.saveSnapshot(snapshot)
-            if shouldPersistCity {
-                persistence.saveSelectedCity(city)
+            if shouldSaveRecentSearch {
+                saveRecentSearchedCity(city)
             }
         } catch is CancellationError {
             return
@@ -311,5 +321,37 @@ final class WeatherViewModel {
                 state = .unavailable(message: "Weather unavailable")
             }
         }
+    }
+
+    private func saveRecentSearchedCity(_ city: City) {
+        recentSearchedCities = Self.normalizedRecentSearchedCities([city] + recentSearchedCities)
+        persistence.saveRecentSearchedCities(recentSearchedCities)
+    }
+
+    private static func currentLocationState(_ snapshot: WeatherSnapshot) -> LoadState? {
+        guard snapshot.city.name == "Current location" else {
+            return nil
+        }
+
+        return .staleLoaded(snapshot, message: "Updating weather")
+    }
+
+    private static func normalizedRecentSearchedCities(_ cities: [City]) -> [City] {
+        var seen = Set<String>()
+        var normalized: [City] = []
+
+        for city in cities {
+            guard seen.insert(city.id).inserted else {
+                continue
+            }
+
+            normalized.append(city)
+
+            if normalized.count == recentSearchedCitiesLimit {
+                break
+            }
+        }
+
+        return normalized
     }
 }

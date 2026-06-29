@@ -65,6 +65,59 @@ let currentCity = DEFAULT_CITY;
 let activeResultIndex = -1;
 let userCoords;
 
+function getPreferredLocale() {
+  return navigator.languages?.find(Boolean) || navigator.language || "en";
+}
+
+function getLocaleMeasurementSystem(locale) {
+  try {
+    const intlLocale = new Intl.Locale(locale);
+    if (intlLocale.measurementSystem) {
+      return intlLocale.measurementSystem;
+    }
+
+    if (typeof intlLocale.getMeasurementSystems === "function") {
+      return intlLocale.getMeasurementSystems()[0] || "";
+    }
+  } catch (error) {
+    // Fall through to parsing the locale string.
+  }
+
+  const measurementMatch = locale.toLowerCase().match(/-u(?:-[a-z0-9]{2,8})*-ms-([a-z0-9]{3,8})/);
+  return measurementMatch?.[1] || "";
+}
+
+function getLocaleRegion(locale) {
+  try {
+    return new Intl.Locale(locale).region || "";
+  } catch (error) {
+    const regionMatch = locale.match(/^[a-z]{2,3}(?:-[a-z]{4})?-([a-z]{2}|\d{3})(?:-|$)/i);
+    return regionMatch?.[1]?.toUpperCase() || "";
+  }
+}
+
+function shouldDisplayFahrenheit(locale = getPreferredLocale()) {
+  const measurementSystem = getLocaleMeasurementSystem(locale);
+
+  if (measurementSystem === "ussystem" || measurementSystem === "us") {
+    return true;
+  }
+
+  if (measurementSystem === "metric" || measurementSystem === "uksystem") {
+    return false;
+  }
+
+  return getLocaleRegion(locale) === "US";
+}
+
+function formatTemperature(temperatureCelsius, locale) {
+  const displayTemperature = shouldDisplayFahrenheit(locale)
+    ? temperatureCelsius * 9 / 5 + 32
+    : temperatureCelsius;
+
+  return `${Math.round(displayTemperature)}<span class="degree">&deg;</span>`;
+}
+
 function setStatus(message) {
   inputEl.dataset.status = message;
 }
@@ -236,7 +289,7 @@ async function loadWeather(city) {
 
     const data = await response.json();
     const current = data.current;
-    temperatureEl.innerHTML = `${Math.round(current.temperature_2m)}<span class="degree">&deg;</span>`;
+    temperatureEl.innerHTML = formatTemperature(current.temperature_2m);
     setCondition(current);
     setLocation(city);
     setStatus(locationLabelEl.textContent);

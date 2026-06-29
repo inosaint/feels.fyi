@@ -120,6 +120,21 @@ private struct NativeSearchControlFallbackMaterialBackground: View {
     }
 }
 
+private struct NativeSearchResultFallbackBackground: View {
+    var body: some View {
+        Capsule()
+            .fill(Color(.secondarySystemBackground).opacity(0.72))
+            .overlay(
+                Capsule()
+                    .fill(.white.opacity(0.18))
+            )
+            .overlay(
+                Capsule()
+                    .stroke(.white.opacity(0.26), lineWidth: 0.5)
+            )
+    }
+}
+
 private struct NativeLiquidGlassRimLight: View {
     var body: some View {
         Capsule()
@@ -165,7 +180,7 @@ extension View {
     }
 
     @ViewBuilder
-    func nativeSearchFieldGlass() -> some View {
+    func nativeSearchFieldGlass(fallbackSearchFillOpacity: Double = 1) -> some View {
         if #available(iOS 26, *) {
             self
                 .glassEffect(.clear.interactive(), in: .capsule)
@@ -176,7 +191,11 @@ extension View {
                  */
         } else {
             self
-                .background(NativeSearchControlFallbackMaterialBackground())
+                .background {
+                    NativePillFallbackMaterialBackground()
+                    NativeSearchControlFallbackMaterialBackground()
+                        .opacity(fallbackSearchFillOpacity)
+                }
         }
     }
 
@@ -248,6 +267,17 @@ extension View {
             self
                 .background(NativePillFallbackMaterialBackground())
                 .shadow(color: .black.opacity(0.16), radius: 23, x: 0, y: 18)
+        }
+    }
+
+    @ViewBuilder
+    func nativeSearchResultRowGlass() -> some View {
+        if #available(iOS 26, *) {
+            self
+                .glassEffect(.clear.interactive(), in: .capsule)
+        } else {
+            self
+                .background(NativeSearchResultFallbackBackground())
         }
     }
 }

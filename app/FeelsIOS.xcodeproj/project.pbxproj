@@ -12,7 +12,7 @@
 		01A000000000000000000105 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000005 /* LocationManager.swift */; };
 		01A000000000000000000107 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000007 /* Assets.xcassets */; };
 		01A000000000000000000108 /* WeatherLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A000000000000000000008 /* WeatherLogicTests.swift */; };
-		01A00000000000000000010A /* CaveatBrush-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000C /* CaveatBrush-Regular.ttf */; };
+		01A00000000000000000010A /* Jua-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000C /* Jua-Regular.ttf */; };
 		01A00000000000000000010B /* FeelsIOSWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000D /* FeelsIOSWidget.swift */; };
 		01A00000000000000000010C /* FeelsMacWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000E /* FeelsMacWidget.swift */; };
 		01A00000000000000000010D /* FeelsWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01A00000000000000000000F /* FeelsWatchApp.swift */; };
@@ -62,7 +62,7 @@
 		01A000000000000000000009 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		01A00000000000000000000A /* feels.fyi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = feels.fyi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01A00000000000000000000B /* FeelsIOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FeelsIOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		01A00000000000000000000C /* CaveatBrush-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CaveatBrush-Regular.ttf"; sourceTree = "<group>"; };
+		01A00000000000000000000C /* Jua-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Jua-Regular.ttf"; sourceTree = "<group>"; };
 		01A00000000000000000000D /* FeelsIOSWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeelsIOSWidget.swift; sourceTree = "<group>"; };
 		01A00000000000000000000E /* FeelsMacWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeelsMacWidget.swift; sourceTree = "<group>"; };
 		01A00000000000000000000F /* FeelsWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeelsWatchApp.swift; sourceTree = "<group>"; };
@@ -178,7 +178,7 @@
 		01A000000000000000000605 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				01A00000000000000000000C /* CaveatBrush-Regular.ttf */,
+				01A00000000000000000000C /* Jua-Regular.ttf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -366,7 +366,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01A000000000000000000107 /* Assets.xcassets in Resources */,
-				01A00000000000000000010A /* CaveatBrush-Regular.ttf in Resources */,
+				01A00000000000000000010A /* Jua-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

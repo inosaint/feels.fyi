@@ -3,8 +3,31 @@ import Foundation
 protocol WeatherPersisting {
     func loadSelectedCity() -> City?
     func saveSelectedCity(_ city: City)
+    func loadRecentSearchedCities() -> [City]
+    func saveRecentSearchedCities(_ cities: [City])
     func loadSnapshot() -> WeatherSnapshot?
     func saveSnapshot(_ snapshot: WeatherSnapshot)
+}
+
+enum TemperatureDisplay {
+    static func text(forCelsius temperature: Double, locale: Locale = .current) -> String {
+        let displayTemperature = usesFahrenheit(locale: locale)
+            ? temperature * 9 / 5 + 32
+            : temperature
+
+        return "\(Int(displayTemperature.rounded()))"
+    }
+
+    static func usesFahrenheit(locale: Locale = .current) -> Bool {
+        if #available(iOS 16, macOS 13, tvOS 16, watchOS 9, *) {
+            return locale.measurementSystem == .us
+        }
+
+        return locale.identifier
+            .replacingOccurrences(of: "_", with: "-")
+            .split(separator: "-")
+            .contains("US")
+    }
 }
 
 struct WeatherSnapshot: Codable, Equatable, Sendable {
@@ -26,7 +49,11 @@ struct WeatherSnapshot: Codable, Equatable, Sendable {
     }
 
     var temperatureText: String {
-        "\(Int(weather.temperature.rounded()))"
+        temperatureText(locale: .current)
+    }
+
+    func temperatureText(locale: Locale) -> String {
+        TemperatureDisplay.text(forCelsius: weather.temperature, locale: locale)
     }
 
     var conditionText: String {
@@ -63,6 +90,7 @@ struct UserDefaultsWeatherStore: WeatherPersisting {
 
     private enum Keys {
         static let selectedCity = "selectedCity"
+        static let recentSearchedCities = "recentSearchedCities"
         static let snapshot = "weatherSnapshot"
         static let legacyVisual = "weatherVisual"
     }
@@ -93,6 +121,22 @@ struct UserDefaultsWeatherStore: WeatherPersisting {
         }
 
         userDefaults.set(data, forKey: Keys.selectedCity)
+    }
+
+    func loadRecentSearchedCities() -> [City] {
+        guard let data = userDefaults.data(forKey: Keys.recentSearchedCities) else {
+            return []
+        }
+
+        return (try? JSONDecoder().decode([City].self, from: data)) ?? []
+    }
+
+    func saveRecentSearchedCities(_ cities: [City]) {
+        guard let data = try? JSONEncoder().encode(cities) else {
+            return
+        }
+
+        userDefaults.set(data, forKey: Keys.recentSearchedCities)
     }
 
     func loadSnapshot() -> WeatherSnapshot? {
