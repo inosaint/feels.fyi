@@ -14,6 +14,7 @@ struct WeatherReadoutView: View {
                 ZStack(alignment: .topLeading) {
                     Text(temperatureText)
                         .font(.custom("Jua", fixedSize: 120))
+                        .kerning(-5)
                         .minimumScaleFactor(0)
                         .lineLimit(1)
                         .background(
@@ -27,7 +28,7 @@ struct WeatherReadoutView: View {
                     Text("°")
                         .font(.custom("Jua", fixedSize: 42))
                         .offset(
-                            x: min(max(0, temperatureWidth - 6), readoutWidth - 15),
+                            x: min(max(0, temperatureWidth), readoutWidth - 15),
                             y: 56
                         )
                 }
