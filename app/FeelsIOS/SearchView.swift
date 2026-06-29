@@ -6,20 +6,30 @@ struct SearchView: View {
     @State private var focusTask: Task<Void, Never>?
 
     private static let keyboardBarGap: CGFloat = 12
+    private static let searchFieldHeight: CGFloat = 48
 
     var body: some View {
         ZStack {
-            SearchBackdropView()
+            ZStack {
+                SearchBackdropView()
 
-            SearchContentView(
-                viewModel: viewModel,
-                selectCity: selectCity(_:)
-            )
+                SearchContentView(
+                    viewModel: viewModel,
+                    selectCity: selectCity(_:)
+                )
+            }
+            .opacity(searchOverlayOpacity)
+            .mask {
+                SearchOverlayRadialMask(isPresented: viewModel.isSearchPresented)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(searchOverlayAnimation, value: viewModel.isSearchPresented)
+        /*
         .safeAreaInset(edge: .bottom, spacing: 0) {
             searchBottomBar
         }
+        */
         .environment(\.locale, Locale(identifier: "en_US"))
         .onAppear {
             focusTask?.cancel()
@@ -41,78 +51,172 @@ struct SearchView: View {
         }
     }
 
-    @ViewBuilder
     private var searchBottomBar: some View {
-        if #available(iOS 26, *) {
-            GlassEffectContainer(spacing: 12) {
-                searchBottomBarContent
-            }
+        searchBottomBarContent
             .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, Self.keyboardBarGap)
-        } else {
-            searchBottomBarContent
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, Self.keyboardBarGap)
-        }
     }
 
     private var searchBottomBarContent: some View {
         HStack(spacing: 12) {
-            HStack(spacing: 8) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 18, weight: .regular))
-                    .foregroundStyle(Color(red: 0.08, green: 0.08, blue: 0.1))
+            searchField
 
-                TextField(
-                    "Search location",
-                    text: Binding(
-                        get: { viewModel.searchQuery },
-                        set: { viewModel.updateSearchQuery($0) }
-                    )
-                )
-                .focused($isSearchFocused)
-                .submitLabel(.search)
-                .autocorrectionDisabled(true)
-                .textInputAutocapitalization(.words)
-                .textContentType(.none)
-                .onSubmit {
-                    triggerActionHaptic()
-                    viewModel.submitSearch()
-                }
-
-                if !viewModel.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Button {
-                        triggerActionHaptic()
-                        viewModel.updateSearchQuery("")
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 21, weight: .semibold))
-                            .symbolRenderingMode(.hierarchical)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(Color(red: 0.05, green: 0.05, blue: 0.06))
-                    .accessibilityLabel("Clear search")
-                }
-            }
-            .font(.system(size: 19, weight: .regular))
-            .padding(.leading, 12)
-            .padding(.trailing, 10)
-            .frame(height: 44)
-            .searchFieldGlass()
-
-            Button {
-                dismissSearch()
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 18, weight: .regular))
-                    .frame(width: 44, height: 44)
-            }
-            .foregroundStyle(WeatherPalette.ink)
-            .searchActionGlass()
-            .accessibilityLabel("Close search")
+            closeButtonSlot
         }
+        .animation(searchFieldContentAnimation, value: viewModel.isSearchPresented)
+    }
+
+    private var searchField: some View {
+        ZStack {
+            searchFieldSurface
+            searchFieldControls
+        }
+    }
+
+    @ViewBuilder
+    private var searchFieldSurface: some View {
+        if viewModel.isSearchPresented {
+            Color.clear
+                .frame(height: Self.searchFieldHeight)
+                .frame(maxWidth: .infinity)
+                /*
+                .searchFieldGlass()
+                .searchPillMatchedGeometry(
+                    in: searchTransitionNamespace,
+                    isSource: viewModel.isSearchPresented
+                )
+                .nativeSearchFieldGlass()
+                .nativeSearchPillGlassTransition(in: searchTransitionNamespace)
+                */
+                .transition(.identity)
+        } else {
+            Color.clear
+                .frame(height: Self.searchFieldHeight)
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    private var searchFieldControls: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 18, weight: .semibold))
+                .symbolRenderingMode(.monochrome)
+                .foregroundStyle(WeatherPalette.ink.opacity(0.92))
+
+            searchTextEntry
+
+            if !viewModel.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Button {
+                    triggerActionHaptic()
+                    viewModel.updateSearchQuery("")
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 21, weight: .semibold))
+                        .symbolRenderingMode(.monochrome)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(WeatherPalette.ink.opacity(0.82))
+                .accessibilityLabel("Clear search")
+            }
+        }
+        .opacity(searchFieldContentOpacity)
+        .font(.system(size: 19, weight: .regular))
+        .padding(.leading, 12)
+        .padding(.trailing, 10)
+    }
+
+    private var searchTextEntry: some View {
+        ZStack(alignment: .leading) {
+            TextField(
+                "",
+                text: Binding(
+                    get: { viewModel.searchQuery },
+                    set: { viewModel.updateSearchQuery($0) }
+                )
+            )
+            .focused($isSearchFocused)
+            .textFieldStyle(.plain)
+            .foregroundStyle(.clear)
+            .tint(WeatherPalette.ink)
+            .submitLabel(.search)
+            .autocorrectionDisabled(true)
+            .textInputAutocapitalization(.words)
+            .textContentType(.none)
+            .accessibilityLabel("Search location")
+            .onSubmit {
+                triggerActionHaptic()
+                viewModel.submitSearch()
+            }
+
+            Text(visibleSearchText)
+                .foregroundStyle(visibleSearchTextColor)
+                .lineLimit(1)
+                .allowsHitTesting(false)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var visibleSearchText: String {
+        viewModel.searchQuery.isEmpty ? "Search location" : viewModel.searchQuery
+    }
+
+    private var visibleSearchTextColor: Color {
+        viewModel.searchQuery.isEmpty ? WeatherPalette.ink.opacity(0.7) : WeatherPalette.ink
+    }
+
+    private var closeButtonSlot: some View {
+        ZStack {
+            if viewModel.isSearchPresented {
+                closeButton
+                    .transition(.identity)
+            }
+        }
+        .frame(width: 44, height: 44)
+        .transaction { transaction in
+            transaction.disablesAnimations = true
+        }
+    }
+
+    private var closeButton: some View {
+        Button {
+            dismissSearch()
+        } label: {
+            Image(systemName: "xmark")
+                .font(.system(size: 18, weight: .regular))
+                .frame(width: 44, height: 44)
+        }
+        /*
+        .buttonStyle(.plain)
+        .searchActionGlass()
+        */
+        .buttonStyle(.plain)
+        .foregroundStyle(WeatherPalette.ink)
+        /*
+        .nativeSearchActionGlassButton()
+        .nativeCompactSearchActionGlass()
+        */
+        .accessibilityLabel("Close search")
+    }
+
+    private var searchOverlayOpacity: Double {
+        viewModel.isSearchPresented ? 1 : 0
+    }
+
+    private var searchFieldContentOpacity: Double {
+        viewModel.isSearchPresented ? 1 : 0
+    }
+
+    private var searchOverlayAnimation: Animation {
+        viewModel.isSearchPresented
+            ? .easeOut(duration: 0.22)
+            : .timingCurve(0.32, 0, 0.67, 0, duration: 0.18)
+    }
+
+    private var searchFieldContentAnimation: Animation {
+        viewModel.isSearchPresented
+            ? .easeOut(duration: 0.12)
+            : .timingCurve(0.32, 0, 0.67, 0, duration: 0.06)
     }
 
     private func selectCity(_ city: City) {
@@ -135,6 +239,192 @@ struct SearchView: View {
 
     private func triggerActionHaptic() {
         AppHaptics.selection()
+    }
+}
+
+struct SearchBottomBarView: View {
+    let viewModel: WeatherViewModel
+    @FocusState private var isSearchFocused: Bool
+    @State private var focusTask: Task<Void, Never>?
+
+    private static let keyboardBarGap: CGFloat = 12
+    private static let searchFieldHeight: CGFloat = 48
+
+    var body: some View {
+        ZStack {
+            Color.clear
+                .allowsHitTesting(false)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            searchBottomBar
+        }
+        .onAppear {
+            focusTask?.cancel()
+            focusTask = Task {
+                try? await Task.sleep(for: .milliseconds(360))
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                await MainActor.run {
+                    isSearchFocused = true
+                }
+            }
+        }
+        .onDisappear {
+            focusTask?.cancel()
+            focusTask = nil
+            isSearchFocused = false
+        }
+    }
+
+    private var searchBottomBar: some View {
+        HStack(spacing: 12) {
+            searchFieldControls
+                .frame(height: Self.searchFieldHeight)
+                .frame(maxWidth: .infinity)
+
+            closeButtonSlot
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+        .padding(.bottom, Self.keyboardBarGap)
+        .animation(searchFieldContentAnimation, value: viewModel.isSearchPresented)
+    }
+
+    private var searchFieldControls: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 18, weight: .semibold))
+                .symbolRenderingMode(.monochrome)
+                .foregroundStyle(WeatherPalette.ink.opacity(0.92))
+
+            searchTextEntry
+
+            if !viewModel.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Button {
+                    triggerActionHaptic()
+                    viewModel.updateSearchQuery("")
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 21, weight: .semibold))
+                        .symbolRenderingMode(.monochrome)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(WeatherPalette.ink.opacity(0.82))
+                .accessibilityLabel("Clear search")
+            }
+        }
+        .opacity(searchFieldContentOpacity)
+        .font(.system(size: 19, weight: .regular))
+        .padding(.leading, 12)
+        .padding(.trailing, 10)
+    }
+
+    private var searchTextEntry: some View {
+        ZStack(alignment: .leading) {
+            TextField(
+                "",
+                text: Binding(
+                    get: { viewModel.searchQuery },
+                    set: { viewModel.updateSearchQuery($0) }
+                )
+            )
+            .focused($isSearchFocused)
+            .textFieldStyle(.plain)
+            .foregroundStyle(.clear)
+            .tint(WeatherPalette.ink)
+            .submitLabel(.search)
+            .autocorrectionDisabled(true)
+            .textInputAutocapitalization(.words)
+            .textContentType(.none)
+            .accessibilityLabel("Search location")
+            .onSubmit {
+                triggerActionHaptic()
+                viewModel.submitSearch()
+            }
+
+            Text(visibleSearchText)
+                .foregroundStyle(visibleSearchTextColor)
+                .lineLimit(1)
+                .allowsHitTesting(false)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var visibleSearchText: String {
+        viewModel.searchQuery.isEmpty ? "Search location" : viewModel.searchQuery
+    }
+
+    private var visibleSearchTextColor: Color {
+        viewModel.searchQuery.isEmpty ? WeatherPalette.ink.opacity(0.7) : WeatherPalette.ink
+    }
+
+    private var closeButtonSlot: some View {
+        ZStack {
+            if viewModel.isSearchPresented {
+                closeButton
+                    .transition(.identity)
+            }
+        }
+        .frame(width: 44, height: 44)
+        .transaction { transaction in
+            transaction.disablesAnimations = true
+        }
+    }
+
+    private var closeButton: some View {
+        Button {
+            dismissSearch()
+        } label: {
+            Image(systemName: "xmark")
+                .font(.system(size: 18, weight: .regular))
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(WeatherPalette.ink)
+        .accessibilityLabel("Close search")
+    }
+
+    private var searchFieldContentOpacity: Double {
+        viewModel.isSearchPresented ? 1 : 0
+    }
+
+    private var searchFieldContentAnimation: Animation {
+        viewModel.isSearchPresented
+            ? .easeOut(duration: 0.12)
+            : .timingCurve(0.32, 0, 0.67, 0, duration: 0.06)
+    }
+
+    private func dismissSearch() {
+        triggerActionHaptic()
+        isSearchFocused = false
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(120))
+            viewModel.dismissSearch()
+        }
+    }
+
+    private func triggerActionHaptic() {
+        AppHaptics.selection()
+    }
+}
+
+private struct SearchOverlayRadialMask: View {
+    let isPresented: Bool
+
+    var body: some View {
+        GeometryReader { proxy in
+            let diameter = max(proxy.size.width, proxy.size.height) * 2.5
+
+            Circle()
+                .fill(.white)
+                .frame(width: diameter, height: diameter)
+                .scaleEffect(isPresented ? 1 : 0.04)
+                .blur(radius: isPresented ? 0 : 26)
+                .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
+        }
+        .ignoresSafeArea()
     }
 }
 
